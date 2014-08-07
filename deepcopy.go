@@ -6,10 +6,10 @@ import (
 	"reflect"
 )
 
-// deepCopyInterfaceToSliceString takes an interface that is a slice of strings
+// InterfaceToSliceString takes an interface that is a slice of strings
 // and returns a deep copy of it as a slice of strings. An error is returned if
 // the interface is not a slice of strings
-func deepCopyInterfaceToSliceString(v interface{}) []string {
+func InterfaceToSliceString(v interface{}) []string {
 	if v == nil {
 		return nil
 	}
@@ -30,11 +30,11 @@ func deepCopyInterfaceToSliceString(v interface{}) []string {
 	return sl
 }
 
-// deepCopyMapStringInterface makes a deep copy of a map[string]interface{} and
+// MapStringInterface makes a deep copy of a map[string]interface{} and
 // returns the copy of the map[string]interface{}
 //
 // notes: This assumes that the interface{} is a []string. Adjust as needed.
-func deepCopyMapStringInterface(m map[string]interface{}) map[string]interface{} {
+func MapStringInterface(m map[string]interface{}) map[string]interface{} {
 	c := map[string]interface{}{}
 	var tmp  []string
 	for k, v := range m {
