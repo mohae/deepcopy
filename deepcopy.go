@@ -40,7 +40,7 @@ func MapStringInterface(m map[string]interface{}) map[string]interface{} {
 	for k, v := range m {
 		switch reflect.TypeOf(v).Kind() {
 		case reflect.Slice:
-			tmp = deepCopyInterfaceToSliceString(v)
+			tmp = InterfaceToSliceString(v)
 		}
 		c[k] = tmp
 	}
