@@ -21,6 +21,6 @@ _testmain.go
 
 *.exe
 *.test
-*.~
+*~
 *.out
 *.log
