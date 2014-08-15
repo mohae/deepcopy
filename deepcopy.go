@@ -3,16 +3,21 @@
 // 
 // Only what is needed has been implemented. Could make more dynamic, at the 
 // cost of reflection. Either adjust as needed or create a new function.
+// 
+// Copyright (c)2014, Joel Scoble (github.com/mohae), all rights reserved.
+// License: MIT, for more details check the included LICENSE.txt.
 package deepcopy
 
 import (
 	"reflect"
 )
 
-// InterfaceToSliceString takes an interface that is a slice of strings
-// and returns a deep copy of it as a slice of strings. An error is returned if
-// the interface is not a slice of strings
-func InterfaceToSliceString(v interface{}) []string {
+var typeOfStrings = reflect.TypeOf([]string(nil))
+var typeOfInts = reflect.TypeOf([]int(nil))
+
+// InterfaceToSliceStrings takes an interface that is a slice of strings
+// and returns a deep copy of it as a slice of strings.
+func InterfaceToSliceStrings(v interface{}) []string {
 	if v == nil {
 		return nil
 	}
@@ -30,11 +35,12 @@ func InterfaceToSliceString(v interface{}) []string {
 	default:
 		return nil
 	}
+
 	return sl
 }
 
-// SliceString deep copies a slice of strings
-func SliceString(s []string) []string{
+// SliceStrings deep copies a slice of strings
+func SliceStrings(s []string) []string{
 	if s == nil {
 		return nil
 	}
@@ -50,20 +56,79 @@ func SliceString(s []string) []string{
 	return sl
 }
 
+// InterfaceToSliceInts takes an interface that is a slice of ints and returns 
+// a deep copy of it as a slice of strings. An error is returned if the 
+// interface is not a slice of strings.
+func InterfaceToSliceInts(v interface{}) []int {
+	if v == nil {
+		return nil
+	}
+	var sl []int
+
+	switch reflect.TypeOf(v).Kind() {
+	case reflect.Slice:
+		s := reflect.ValueOf(v)
+		sLen := s.Len()
+
+		for i := 0; i < sLen; i++ {
+			sl = append(sl, s.Index(i).Interface().(int))
+		}
+
+	default:
+		return nil
+	}
+	return sl
+}
+
+// SliceInts deep copies a slice of ints.
+func SliceInts(s []int) []int{
+	if s == nil {
+		return nil
+	}
+	
+	var sl []int
+
+	sLen := len(s)
+
+	for i := 0; i < sLen; i++ {
+		sl = append(sl, s[i])
+	}
+
+	return sl
+}
+
 // MapStringInterface makes a deep copy of a map[string]interface{} and
 // returns the copy of the map[string]interface{}
 //
-// notes: This assumes that the interface{} is a []string or another 
-//	map[string]interface{}.
-//	Adjust as needed.
+// Supported:
+//	[]string
+//	[]int
+//	map[string]interface{}
+// TODO convert embedded error string with an actual error, con, callee would
+//	have to check for error. 
+//	Otherwise add error return parm and abort conversion whenever an 
+//	unexpected type is encountered. Probably the best option.
 func MapStringInterface(m map[string]interface{}) map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+
 	c := map[string]interface{}{}
 	var tmp interface{}
 
 	for k, v := range m {
 		switch reflect.TypeOf(v).Kind() {
 		case reflect.Slice:
-			tmp = InterfaceToSliceString(v)
+
+			switch reflect.ValueOf(v).Type() {
+			case typeOfStrings:
+				tmp = InterfaceToSliceStrings(v)
+			case typeOfInts:
+				tmp = InterfaceToSliceInts(v)
+			default:
+				tmp = "Error unsupported Type: " + reflect.ValueOf(v).Type().String() + " is not supported."
+			}
+
 		case reflect.Map:
 			tmp = MapStringInterface(v.(map[string]interface{}))
 		}
@@ -72,5 +137,3 @@ func MapStringInterface(m map[string]interface{}) map[string]interface{} {
 
 	return c
 }
-
-
