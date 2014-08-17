@@ -12,9 +12,6 @@ import (
 	"reflect"
 )
 
-var typeOfStrings = reflect.TypeOf([]string(nil))
-var typeOfInts = reflect.TypeOf([]int(nil))
-
 // InterfaceToSliceStrings takes an interface that is a slice of strings
 // and returns a deep copy of it as a slice of strings.
 func InterfaceToSliceStrings(v interface{}) []string {
@@ -97,43 +94,88 @@ func SliceInts(s []int) []int{
 	return sl
 }
 
-// MapStringInterface makes a deep copy of a map[string]interface{} and
-// returns the copy of the map[string]interface{}
-//
-// Supported:
-//	[]string
-//	[]int
-//	map[string]interface{}
-// TODO convert embedded error string with an actual error, con, callee would
-//	have to check for error. 
-//	Otherwise add error return parm and abort conversion whenever an 
-//	unexpected type is encountered. Probably the best option.
-func MapStringInterface(m map[string]interface{}) map[string]interface{} {
-	if m == nil {
+
+// Iface recursively deep copies an interface{}
+func Iface(iface interface{}) interface{} {
+	if iface == nil {
 		return nil
 	}
 
-	c := map[string]interface{}{}
-	var tmp interface{}
+	// Make the interface a reflect.Value
+	original := reflect.ValueOf(iface)
 
-	for k, v := range m {
-		switch reflect.TypeOf(v).Kind() {
-		case reflect.Slice:
+	// Make a copy of the same type as the original.
+	copy := reflect.New(original.Type()).Elem()
 
-			switch reflect.ValueOf(v).Type() {
-			case typeOfStrings:
-				tmp = InterfaceToSliceStrings(v)
-			case typeOfInts:
-				tmp = InterfaceToSliceInts(v)
-			default:
-				tmp = "Error unsupported Type: " + reflect.ValueOf(v).Type().String() + " is not supported."
-			}
+	// Recursively copy the original.
+	copyRecursive(original, copy)
 
-		case reflect.Map:
-			tmp = MapStringInterface(v.(map[string]interface{}))
+	// Return theb copy as an interface.
+	return copy.Interface()
+}
+
+// copyRecursive does the actual copying of the interface. It currently has 
+// limited support for what it can handle. Add as needed.
+func copyRecursive(original, copy reflect.Value) {
+	// handle according to original's Kind
+	switch original.Kind() {
+	case reflect.Ptr:
+		// Get the actual value being pointed to.
+		originalValue := original.Elem()
+
+		// if  it isn't valid, return.
+		if !originalValue.IsValid() {
+			return
 		}
-		c[k] = tmp
-	}
 
-	return c
+		copy.Set(reflect.New(originalValue.Type()))
+		copyRecursive(originalValue, copy.Elem())
+
+	case reflect.Interface:
+		// Get the value for the interface, not the pointer.
+		originalValue := original.Elem()
+
+		// Get the value by calling Elem().
+		copyValue := reflect.New(originalValue.Type()).Elem()
+		copyRecursive(originalValue, copyValue)
+		copy.Set(copyValue)
+
+	case reflect.Struct:
+		// Go through each field of the struct and copy it.
+		for i := 0; i < original.NumField(); i++ {
+			copyRecursive(original.Field(i), copy.Field(i))
+		}
+
+	case reflect.Slice:
+		// Make a new slice and copy each element.
+		copy.Set(reflect.MakeSlice(original.Type(), original.Len(), original.Cap()))
+		for i:= 0; i < original.Len(); i++ {
+			copyRecursive(original.Index(i), copy.Index(i))
+		}
+
+	case reflect.Map:
+		copy.Set(reflect.MakeMap(original.Type()))
+		for _, key := range original.MapKeys() {
+			originalValue := original.MapIndex(key)
+			copyValue := reflect.New(originalValue.Type()).Elem()
+			copyRecursive(originalValue, copyValue)
+			copy.SetMapIndex(key, copyValue)
+		}
+
+	// Set the actual values from here on.
+	case reflect.String:
+		copy.SetString(original.Interface().(string))
+		
+	case reflect.Int:
+		copy.SetInt(int64(original.Interface().(int)))
+
+	case reflect.Bool:
+		copy.SetBool(original.Interface().(bool))
+
+	case reflect.Float64:
+		copy.SetFloat(original.Interface().(float64))
+
+	default:
+		copy.Set(original)
+	}
 }

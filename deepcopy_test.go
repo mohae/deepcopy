@@ -1,9 +1,11 @@
 package deepcopy
 
 import (
+	_ "reflect"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	_ "github.com/mohae/customjson"
 )
 
 var sliceStringsOrig = []string{
@@ -99,8 +101,45 @@ var mapStringInterfaceMaps = map[string]interface{}{
 		"v1",
 		"v2",
 		"v3",
+	},
+	"slice4": []float64{
+		1.232132,
+		123.2322,
 	},	
 }
+
+type testStruct struct {
+	TestName	string
+	Tests		[]*Testz
+}
+
+type Testz struct {
+	Expected 	string
+	Unexpected	[]string
+	Done		bool
+}
+
+var testS = testStruct{
+	TestName: "testname",
+	Tests: []*Testz{
+		&Testz{
+			Expected: "expected1",
+			Unexpected: []string{
+				"oops1",
+				"uhoh1",
+			},
+			Done: true,
+		},
+		&Testz{
+			Expected: "expected2",
+			Unexpected: []string{
+				"oops2",
+				"uhoh2",
+			},
+			Done: false,
+		},
+	},
+}	
 //var origMapStringInterface = map[string]interface{}{
 //}
 
@@ -239,6 +278,7 @@ func TestInterfaceSliceInts(t *testing.T) {
 	})
 }	
 
+/*
 func TestMapStringInterface(t *testing.T) {
 	Convey("Give a nil value", t, func() {
 		Convey("Deep copying it", func() {
@@ -293,6 +333,107 @@ func TestMapStringInterface(t *testing.T) {
 				})
 				Convey("Modifying the copy should not change the original", func() {
 				})
+			})
+		})
+	})
+}
+*/
+/*
+func TestInterfaceToSliceInterfaces(t * testing.T) {
+	Convey("Given an interface with slices", t, func() {
+		Convey("copying it to  a slice of interfaces", func() {
+			copy :=  InterfaceToSliceInterfaces(mapStringInterfaceSliceStrings["slice1"])
+//			copy2 := InterfaceToSliceStrings(copy)
+			Convey("Should result in a copy", func() {
+				So(reflect.ValueOf(copy[0]).Interface(), ShouldResemble, "value1")
+//				So(reflect.KindOf(copy[0]).Interface(), ShouldResemble, "")
+				So(copy, ShouldContain, "value2")
+				So(copy, ShouldContain, "value3")
+			})
+		})
+	})
+}
+*/
+
+func  TestRecursiveCopy(t *testing.T) {
+	Convey("Given a nil pointer to an interface", t, func() {
+		var tst interface{}
+		Convey("copying it", func() {
+			copy := Iface(tst) 
+			Convey("should result in nil", func() {
+				So(copy, ShouldBeNil)
+			})
+		})
+	})
+
+	Convey("Given a slice of strings", t, func() {
+		Convey("copying it", func() {
+			copy := Iface(sliceStringsOrig) 
+			Convey("should result in nil", func() {
+				So(copy, ShouldResemble, sliceStringsOrig)
+			})
+		})
+	})
+	
+	Convey("Given a slice of strings", t, func() {
+		Convey("copying it", func() {
+			copy := Iface(sliceIntsOrig) 
+			Convey("should result in nil", func() {
+				So(copy, ShouldResemble, sliceIntsOrig)
+			})
+		})
+	})
+
+	Convey("Given a slice of strings", t, func() {
+		Convey("copying it", func() {
+			copy := Iface(mapStringInterfaceSliceStrings) 
+			Convey("should result in nil", func() {
+				So(copy, ShouldResemble, mapStringInterfaceSliceStrings)
+			})
+		})
+	})
+
+	Convey("Given a slice of strings", t, func() {
+		Convey("copying it", func() {
+			copy := Iface(mapStringInterfaceSliceInts) 
+			Convey("should result in nil", func() {
+				So(copy, ShouldResemble, mapStringInterfaceSliceInts)
+			})
+		})
+	})
+
+	Convey("Given a slice of strings", t, func() {
+		Convey("copying it", func() {
+			copy := Iface(mapStringInterfaceSliceBools) 
+			Convey("should result in nil", func() {
+				So(copy, ShouldResemble, mapStringInterfaceSliceBools)
+			})
+		})
+	})
+
+	Convey("Given a slice of strings", t, func() {
+		Convey("copying it", func() {
+			copy := Iface(sliceStringsOrig) 
+			Convey("should result in nil", func() {
+				So(copy, ShouldResemble, sliceStringsOrig)
+			})
+		})
+	})
+
+	Convey("Given a slice of strings", t, func() {
+		Convey("copying it", func() {
+			copy := Iface(mapStringInterfaceMaps) 
+			Convey("should result in nil", func() {
+				So(copy, ShouldResemble, mapStringInterfaceMaps)
+			})
+		})
+	})
+
+	Convey("Given a slice of strings", t, func() {
+		Convey("copying it", func() {
+			copy := Iface(testS) 
+			Convey("should result in nil", func() {
+				So(copy, ShouldResemble, testS)
 			})
 		})
 	})
