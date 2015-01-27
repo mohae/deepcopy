@@ -1,9 +1,9 @@
 // deepcopy deep copies maps, slices, etc. A standard copy will copy the
 // pointers: deep copy copies the values pointed to.
-// 
-// Only what is needed has been implemented. Could make more dynamic, at the 
+//
+// Only what is needed has been implemented. Could make more dynamic, at the
 // cost of reflection. Either adjust as needed or create a new function.
-// 
+//
 // Copyright (c)2014, Joel Scoble (github.com/mohae), all rights reserved.
 // License: MIT, for more details check the included LICENSE.txt.
 package deepcopy
@@ -12,9 +12,9 @@ import (
 	"reflect"
 )
 
-// InterfaceToSliceStrings takes an interface that is a slice of strings
+// InterfaceToStringSlice takes an interface that is a slice of strings
 // and returns a deep copy of it as a slice of strings.
-func InterfaceToSliceStrings(v interface{}) []string {
+func InterfaceToStringSlice(v interface{}) []string {
 	if v == nil {
 		return nil
 	}
@@ -36,12 +36,12 @@ func InterfaceToSliceStrings(v interface{}) []string {
 	return sl
 }
 
-// SliceStrings deep copies a slice of strings
-func SliceStrings(s []string) []string{
+// StringSlice deep copies a slice of strings
+func StringSlice(s []string) []string {
 	if s == nil {
 		return nil
 	}
-	
+
 	var sl []string
 
 	sLen := len(s)
@@ -53,10 +53,10 @@ func SliceStrings(s []string) []string{
 	return sl
 }
 
-// InterfaceToSliceInts takes an interface that is a slice of ints and returns 
-// a deep copy of it as a slice of strings. An error is returned if the 
+// InterfaceToIntSlice takes an interface that is a slice of ints and returns
+// a deep copy of it as a slice of strings. An error is returned if the
 // interface is not a slice of strings.
-func InterfaceToSliceInts(v interface{}) []int {
+func InterfaceToIntSlice(v interface{}) []int {
 	if v == nil {
 		return nil
 	}
@@ -77,12 +77,12 @@ func InterfaceToSliceInts(v interface{}) []int {
 	return sl
 }
 
-// SliceInts deep copies a slice of ints.
-func SliceInts(s []int) []int{
+// IntSlice deep copies a slice of ints.
+func IntSlice(s []int) []int {
 	if s == nil {
 		return nil
 	}
-	
+
 	var sl []int
 
 	sLen := len(s)
@@ -93,7 +93,6 @@ func SliceInts(s []int) []int{
 
 	return sl
 }
-
 
 // Iface recursively deep copies an interface{}
 func Iface(iface interface{}) interface{} {
@@ -114,7 +113,7 @@ func Iface(iface interface{}) interface{} {
 	return copy.Interface()
 }
 
-// copyRecursive does the actual copying of the interface. It currently has 
+// copyRecursive does the actual copying of the interface. It currently has
 // limited support for what it can handle. Add as needed.
 func copyRecursive(original, copy reflect.Value) {
 	// handle according to original's Kind
@@ -149,7 +148,7 @@ func copyRecursive(original, copy reflect.Value) {
 	case reflect.Slice:
 		// Make a new slice and copy each element.
 		copy.Set(reflect.MakeSlice(original.Type(), original.Len(), original.Cap()))
-		for i:= 0; i < original.Len(); i++ {
+		for i := 0; i < original.Len(); i++ {
 			copyRecursive(original.Index(i), copy.Index(i))
 		}
 
@@ -165,7 +164,7 @@ func copyRecursive(original, copy reflect.Value) {
 	// Set the actual values from here on.
 	case reflect.String:
 		copy.SetString(original.Interface().(string))
-		
+
 	case reflect.Int:
 		copy.SetInt(int64(original.Interface().(int)))
 
