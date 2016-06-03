@@ -370,7 +370,7 @@ func TestRecursiveCopy(t *testing.T) {
 	Convey("Given a slice of strings", t, func() {
 		Convey("copying it", func() {
 			copy := Iface(stringSliceOrig)
-			Convey("should result in nil", func() {
+			Convey("should result in result resembling original", func() {
 				So(copy, ShouldResemble, stringSliceOrig)
 			})
 		})
@@ -379,7 +379,7 @@ func TestRecursiveCopy(t *testing.T) {
 	Convey("Given a slice of strings", t, func() {
 		Convey("copying it", func() {
 			copy := Iface(intSliceOrig)
-			Convey("should result in nil", func() {
+			Convey("should result in result resembling original", func() {
 				So(copy, ShouldResemble, intSliceOrig)
 			})
 		})
@@ -388,7 +388,7 @@ func TestRecursiveCopy(t *testing.T) {
 	Convey("Given a slice of strings", t, func() {
 		Convey("copying it", func() {
 			copy := Iface(mapStringInterfaceStringSlice)
-			Convey("should result in nil", func() {
+			Convey("should result in result resembling original", func() {
 				So(copy, ShouldResemble, mapStringInterfaceStringSlice)
 			})
 		})
@@ -397,7 +397,7 @@ func TestRecursiveCopy(t *testing.T) {
 	Convey("Given a slice of strings", t, func() {
 		Convey("copying it", func() {
 			copy := Iface(mapStringInterfaceIntSlice)
-			Convey("should result in nil", func() {
+			Convey("should result in result resembling original", func() {
 				So(copy, ShouldResemble, mapStringInterfaceIntSlice)
 			})
 		})
@@ -406,7 +406,7 @@ func TestRecursiveCopy(t *testing.T) {
 	Convey("Given a slice of strings", t, func() {
 		Convey("copying it", func() {
 			copy := Iface(mapStringInterfaceBoolSlice)
-			Convey("should result in nil", func() {
+			Convey("should result in result resembling original", func() {
 				So(copy, ShouldResemble, mapStringInterfaceBoolSlice)
 			})
 		})
@@ -415,7 +415,7 @@ func TestRecursiveCopy(t *testing.T) {
 	Convey("Given a slice of strings", t, func() {
 		Convey("copying it", func() {
 			copy := Iface(stringSliceOrig)
-			Convey("should result in nil", func() {
+			Convey("should result in result resembling original", func() {
 				So(copy, ShouldResemble, stringSliceOrig)
 			})
 		})
@@ -424,7 +424,7 @@ func TestRecursiveCopy(t *testing.T) {
 	Convey("Given a slice of strings", t, func() {
 		Convey("copying it", func() {
 			copy := Iface(mapStringInterfaceMaps)
-			Convey("should result in nil", func() {
+			Convey("should result in result resembling original", func() {
 				So(copy, ShouldResemble, mapStringInterfaceMaps)
 			})
 		})
@@ -433,8 +433,302 @@ func TestRecursiveCopy(t *testing.T) {
 	Convey("Given a slice of strings", t, func() {
 		Convey("copying it", func() {
 			copy := Iface(testS)
-			Convey("should result in nil", func() {
+			Convey("should result in result resembling original", func() {
 				So(copy, ShouldResemble, testS)
+			})
+		})
+	})
+
+	Convey("Given a type-aliased string", t, func() {
+		type aliased string
+		testValue := aliased("hello")
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a type-aliased int", t, func() {
+		type aliased int
+		testValue := aliased(42)
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a type-aliased int8", t, func() {
+		type aliased int8
+		testValue := aliased(42)
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a type-aliased int16", t, func() {
+		type aliased int16
+		testValue := aliased(42)
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a type-aliased int32", t, func() {
+		type aliased int32
+		testValue := aliased(42)
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a type-aliased int64", t, func() {
+		type aliased int64
+		testValue := aliased(42)
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a type-aliased uint", t, func() {
+		type aliased uint
+		testValue := aliased(42)
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a type-aliased uint8", t, func() {
+		type aliased uint8
+		testValue := aliased(42)
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a type-aliased uint16", t, func() {
+		type aliased uint16
+		testValue := aliased(42)
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a type-aliased uint32", t, func() {
+		type aliased uint32
+		testValue := aliased(42)
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a type-aliased uint64", t, func() {
+		type aliased uint64
+		testValue := aliased(42)
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a type-aliased float32", t, func() {
+		type aliased float32
+		testValue := aliased(42.0)
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a type-aliased float64", t, func() {
+		type aliased float64
+		testValue := aliased(42.0)
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a type-aliased bool", t, func() {
+		type aliased bool
+		testValue := aliased(true)
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a string", t, func() {
+		var testValue string = "hello"
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a int", t, func() {
+		var testValue int = 42
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a int8", t, func() {
+		var testValue int8 = 42
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a int16", t, func() {
+		var testValue int16 = 42
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a int32", t, func() {
+		var testValue int32 = 42
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a int64", t, func() {
+		var testValue int64 = 42
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a uint", t, func() {
+		var testValue uint = 42
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a uint8", t, func() {
+		var testValue uint8 = 42
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a uint16", t, func() {
+		var testValue uint16 = 42
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a uint32", t, func() {
+		var testValue uint32 = 42
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a uint64", t, func() {
+		var testValue uint64 = 42
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a float32", t, func() {
+		var testValue float32 = 42.0
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a float64", t, func() {
+		var testValue float64 = 42.0
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
+			})
+		})
+	})
+
+	Convey("Given a bool", t, func() {
+		var testValue bool = true
+		Convey("copying it", func() {
+			copy := Iface(testValue)
+			Convey("should result in result resembling original", func() {
+				So(copy, ShouldResemble, testValue)
 			})
 		})
 	})
