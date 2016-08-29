@@ -36,23 +36,6 @@ func InterfaceToStringSlice(v interface{}) []string {
 	return sl
 }
 
-// StringSlice deep copies a slice of strings
-func StringSlice(s []string) []string {
-	if s == nil {
-		return nil
-	}
-
-	var sl []string
-
-	sLen := len(s)
-
-	for i := 0; i < sLen; i++ {
-		sl = append(sl, s[i])
-	}
-
-	return sl
-}
-
 // InterfaceToIntSlice takes an interface that is a slice of ints and returns
 // a deep copy of it as a slice of strings. An error is returned if the
 // interface is not a slice of strings.
@@ -74,23 +57,6 @@ func InterfaceToIntSlice(v interface{}) []int {
 	default:
 		return nil
 	}
-	return sl
-}
-
-// IntSlice deep copies a slice of ints.
-func IntSlice(s []int) []int {
-	if s == nil {
-		return nil
-	}
-
-	var sl []int
-
-	sLen := len(s)
-
-	for i := 0; i < sLen; i++ {
-		sl = append(sl, s[i])
-	}
-
 	return sl
 }
 
