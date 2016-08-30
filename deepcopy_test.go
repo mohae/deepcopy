@@ -1,6 +1,7 @@
 package deepcopy
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -436,4 +437,224 @@ arr4:
 	}
 
 done:
+}
+
+// not meant to be exhaustive
+func TestComplexSlices(t *testing.T) {
+	orig3Int := [][][]int{[][]int{[]int{1, 2, 3}, []int{11, 22, 33}}, [][]int{[]int{7, 8, 9}, []int{66, 77, 88, 99}}}
+	cpy := Copy(orig3Int)
+	cpyI, ok := cpy.([][][]int)
+	if !ok {
+		t.Errorf("copy of [][][]int: expected the interface to contain a [][][]int; it didn't")
+		goto sliceMap
+	}
+	if &cpyI == &orig3Int {
+		t.Error("[][][]int: address of copy was the same as original; they should be different")
+	}
+	if len(orig3Int) != len(cpyI) {
+		t.Errorf("[][][]int: len of copy was %d; want %d", len(cpyI), len(orig3Int))
+		goto sliceMap
+	}
+	for i, v := range orig3Int {
+		if len(v) != len(cpyI[i]) {
+			t.Errorf("[][][]int: len of element %d was %d; want %d", i, len(cpyI[i]), len(v))
+			continue
+		}
+		for j, vv := range v {
+			if len(vv) != len(cpyI[i][j]) {
+				t.Errorf("[][][]int: len of element %d:%d was %d, want %d", i, j, len(cpyI[i][j]), len(vv))
+				continue
+			}
+			for k, vvv := range vv {
+				if vvv != cpyI[i][j][k] {
+					t.Errorf("[][][]int: element %d:%d:%d was %d, want %d", i, j, k, cpyI[i][j][k], vvv)
+				}
+			}
+		}
+
+	}
+
+sliceMap:
+	slMap := []map[int]string{map[int]string{0: "a", 1: "b"}, map[int]string{10: "k", 11: "l", 12: "m"}}
+	cpy = Copy(slMap)
+	cpyM, ok := cpy.([]map[int]string)
+	if !ok {
+		t.Errorf("copy of []map[int]string: expected the interface to contain a []map[int]string; it didn't")
+		goto done
+	}
+	if &cpyM == &slMap {
+		t.Error("[]map[int]string: address of copy was the same as original; they should be different")
+	}
+	if len(slMap) != len(cpyM) {
+		t.Errorf("[]map[int]string: len of copy was %d; want %d", len(cpyM), len(slMap))
+		goto done
+	}
+	for i, v := range slMap {
+		if len(v) != len(cpyM[i]) {
+			t.Errorf("[]map[int]string: len of element %d was %d; want %d", i, len(cpyM[i]), len(v))
+			continue
+		}
+		for k, vv := range v {
+			val, ok := cpyM[i][k]
+			if !ok {
+				t.Errorf("[]map[int]string: element %d was expected to have a value at key %d, it didn't", i, k)
+				continue
+			}
+			if val != vv {
+				t.Errorf("[]map[int]string: element %d, key %d: got %s, want %s", i, k, val, vv)
+			}
+		}
+	}
+done:
+}
+
+type A struct {
+	Int    int
+	String string
+	UintSl []uint
+	NilSl  []string
+	Map    map[string]int
+	MapB   map[string]*B
+	SliceB []*B
+	B
+}
+
+type B struct {
+	Vals []string
+}
+
+var AStruct = A{
+	Int:    42,
+	String: "Konichiwa",
+	UintSl: []uint{0, 1, 2, 3},
+	Map:    map[string]int{"a": 1, "b": 2},
+	MapB: map[string]*B{
+		"hi":  &B{Vals: []string{"hello", "bonjour"}},
+		"bye": &B{Vals: []string{"good-bye", "au revoir"}},
+	},
+	SliceB: []*B{
+		&B{Vals: []string{"Ciao", "Aloha"}},
+	},
+	B: B{Vals: []string{"42"}},
+}
+
+func TestStructA(t *testing.T) {
+	cpy := Copy(AStruct)
+	a, ok := cpy.(A)
+	if !ok {
+		t.Error("expected copy to be of type AStruct, it wasn't")
+		return
+	}
+	if &a == &AStruct {
+		t.Error("expected copy to have a different address than the original; it was the same")
+		return
+	}
+	if a.Int != AStruct.Int {
+		t.Errorf("A.Int: got %v, want %v", a.Int, AStruct.Int)
+	}
+	if a.String != AStruct.String {
+		t.Errorf("A.String: got %v; want %v", a.String, AStruct.String)
+	}
+	if fmt.Sprintf("%p", a.UintSl) == fmt.Sprintf("%p", AStruct.UintSl) {
+		t.Error("A.Uintsl: expected the copies address to be different; it wasn't")
+		goto AMap
+	}
+	if len(a.UintSl) != len(AStruct.UintSl) {
+		t.Errorf("A.UintSl: got len of %d, want %d", len(a.UintSl), len(AStruct.UintSl))
+		goto AMap
+	}
+	for i, v := range AStruct.UintSl {
+		if a.UintSl[i] != v {
+			t.Errorf("A.UintSl %d: got %d, want %d", i, a.UintSl[i], v)
+		}
+	}
+AMap:
+	if fmt.Sprintf("%p", a.Map) == fmt.Sprintf("%p", AStruct.Map) {
+		t.Error("A.Map: expected the copy's address to be different; it wasn't")
+		goto AMapB
+	}
+	if len(a.Map) != len(AStruct.Map) {
+		t.Errorf("A.Map: got len of %d, want %d", len(a.Map), len(AStruct.Map))
+		goto AMapB
+	}
+	for k, v := range AStruct.Map {
+		val, ok := a.Map[k]
+		if !ok {
+			t.Errorf("A.Map: expected the key %s to exist in the copy, it didn't", k)
+			continue
+		}
+		if val != v {
+			t.Errorf("A.Map[%s]: got %d, want %d", k, val, v)
+		}
+	}
+
+AMapB:
+	if fmt.Sprintf("%p", a.MapB) == fmt.Sprintf("%p", AStruct.MapB) {
+		t.Error("A.MapB: expected the copy's address to be different; it wasn't")
+		goto ASliceB
+	}
+	if len(a.MapB) != len(AStruct.MapB) {
+		t.Errorf("A.MapB: got len of %d, want %d", len(a.MapB), len(AStruct.MapB))
+		goto ASliceB
+	}
+	for k, v := range AStruct.MapB {
+		val, ok := a.MapB[k]
+		if !ok {
+			t.Errorf("A.MapB: expected the key %s to exist in the copy, it didn't", k)
+			continue
+		}
+		if fmt.Sprintf("%p", val) == fmt.Sprintf("%p", v) {
+			t.Errorf("A.MapB[%s]: expected the addresses of the values to be different; they weren't", k)
+			continue
+		}
+		for i, vv := range v.Vals {
+			if vv != val.Vals[i] {
+				t.Errorf("A.MapB[%s].Vals[%d]: got %s want %s", k, i, vv, val.Vals[i])
+			}
+		}
+	}
+ASliceB:
+	if fmt.Sprintf("%p", AStruct.SliceB) == fmt.Sprintf("%p", a.SliceB) {
+		t.Error("A.SliceB: expected the copy's address to be different; it wasn't")
+		goto B
+	}
+
+	if len(AStruct.SliceB) != len(a.SliceB) {
+		t.Errorf("A.SliceB: got length of %d; want %d", len(a.SliceB), len(AStruct.SliceB))
+		goto B
+	}
+
+	for i, v := range AStruct.SliceB {
+		if fmt.Sprintf("%p", v) == fmt.Sprintf("%p", a.SliceB[i]) {
+			t.Errorf("A.SliceB[%d]: expected them to have different addresses, they didn't", i)
+			continue
+		}
+		if len(v.Vals) != len(a.SliceB[i].Vals) {
+			t.Errorf("A.SliceB[%d]: expected B's vals to have the same length, they didn't", i)
+			continue
+		}
+		for j, val := range v.Vals {
+			if val != a.SliceB[i].Vals[j] {
+				t.Errorf("A.SliceB[%d].Vals[%d]: got %v; want %v", i, j, a.SliceB[i].Vals[j], val)
+			}
+		}
+	}
+B:
+	if fmt.Sprintf("%p", &AStruct.B) == fmt.Sprintf("%p", &a.B) {
+		t.Error("A.B: expected them to have different addresses, they didn't")
+		return
+	}
+	if fmt.Sprintf("%p", AStruct.B.Vals) == fmt.Sprintf("%p", a.B.Vals) {
+		t.Error("A.B.Vals: expected them to have different addresses, they didn't")
+		return
+	}
+	if len(AStruct.B.Vals) != len(a.B.Vals) {
+		t.Error("A.B.Vals: expected their lengths to be the same, they weren't")
+		return
+	}
+	for i, v := range AStruct.B.Vals {
+		if v != a.B.Vals[i] {
+			t.Errorf("A.B.Vals[%d]: got %s want %s", i, a.B.Vals[i], v)
+		}
+	}
 }
