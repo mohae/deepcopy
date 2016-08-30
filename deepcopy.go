@@ -138,7 +138,7 @@ func copyRecursive(original, cpy reflect.Value) {
 			cpy.SetMapIndex(key, copyValue)
 		}
 
-		// Set the actual values from here on.
+	// Set the actual values from here on.
 	case reflect.Bool:
 		cpy.SetBool(original.Interface().(bool))
 

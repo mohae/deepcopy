@@ -246,7 +246,7 @@ infSlice:
 	cpyInf, ok := cpy.([]interface{})
 	if !ok {
 		t.Errorf("copy of []int8: expected the interface to contain a []int8; it didn't")
-		goto done
+		goto byteSlice
 	}
 	if len(cpyInf) != len(infSliceOrig) {
 		t.Errorf("len of copy was %d; want %d", len(cpyInf), len(infSliceOrig))
@@ -260,5 +260,22 @@ infSlice:
 		}
 	}
 
+byteSlice:
+	byteSlice := []byte("hello")
+	cpy = Copy(byteSlice)
+	cpyByte, ok := cpy.([]byte)
+	if !ok {
+		t.Errorf("copy of []byte: expected the interface to contain a []byte; it didn't")
+		goto done
+	}
+	if len(cpyByte) != len(byteSlice) {
+		t.Errorf("len of copy was %d; want %d", len(cpyByte), len(byteSlice))
+	}
+	if &cpyByte == &byteSlice {
+		t.Error("address of copy was the same as original; they should be different")
+	}
+	if string(cpyByte) != string(byteSlice) {
+		t.Errorf("got %s; want %s", string(cpyByte), string(byteSlice))
+	}
 done:
 }
