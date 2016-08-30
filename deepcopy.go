@@ -1,11 +1,11 @@
-// deepcopy deep copies maps, slices, etc. A standard copy will copy the
+// deepcopy makes deep copies of things. A standard copy will copy the
 // pointers: deep copy copies the values pointed to.
 //
 // For most use-cases, Copy should be used.  The others functions exist for
 // backwards compatibility reasons.
 //
-// Copyright (c)2014, Joel Scoble (github.com/mohae), all rights reserved.
-// License: MIT, for more details check the included LICENSE.txt.
+// Copyright (c)2014-2016, Joel Scoble (github.com/mohae), all rights reserved.
+// License: MIT, for more details check the included LICENSE file.
 package deepcopy
 
 import (
@@ -13,7 +13,10 @@ import (
 )
 
 // InterfaceToStringSlice takes an interface that is a slice of strings
-// and returns a deep copy of it as a slice of strings.
+// and returns a deep copy of it as a slice of strings.  If the interface
+// doesn't contain a []string, a nil will be returned. This exists for
+// backwards compatibility reasons and should not be used; instead, use
+// Copy().
 func InterfaceToStringSlice(v interface{}) []string {
 	if v == nil {
 		return nil
@@ -37,8 +40,9 @@ func InterfaceToStringSlice(v interface{}) []string {
 }
 
 // InterfaceToIntSlice takes an interface that is a slice of ints and returns
-// a deep copy of it as a slice of strings. An error is returned if the
-// interface is not a slice of strings.
+// a deep copy of it as a slice of ints.  If the interface doesn't contain a
+// []int, a nil will be returned.  This exists for backwards compatibility
+// reasons and should not be used; instead, use Copy().
 func InterfaceToIntSlice(v interface{}) []int {
 	if v == nil {
 		return nil
@@ -134,18 +138,33 @@ func copyRecursive(original, cpy reflect.Value) {
 			cpy.SetMapIndex(key, copyValue)
 		}
 
-	// Set the actual values from here on.
-	case reflect.String:
-		cpy.SetString(original.Interface().(string))
+		// Set the actual values from here on.
+	case reflect.Bool:
+		cpy.SetBool(original.Interface().(bool))
+
+	case reflect.Float32:
+		cpy.SetFloat(float64(original.Interface().(float32)))
+
+	case reflect.Float64:
+		cpy.SetFloat(original.Interface().(float64))
 
 	case reflect.Int:
 		cpy.SetInt(int64(original.Interface().(int)))
 
-	case reflect.Bool:
-		cpy.SetBool(original.Interface().(bool))
+	case reflect.Int8:
+		cpy.SetInt(int64(original.Interface().(int8)))
 
-	case reflect.Float64:
-		cpy.SetFloat(original.Interface().(float64))
+	case reflect.Int16:
+		cpy.SetInt(int64(original.Interface().(int16)))
+
+	case reflect.Int32:
+		cpy.SetInt(int64(original.Interface().(int32)))
+
+	case reflect.Int64:
+		cpy.SetInt(original.Interface().(int64))
+
+	case reflect.String:
+		cpy.SetString(original.Interface().(string))
 
 	default:
 		cpy.Set(original)
