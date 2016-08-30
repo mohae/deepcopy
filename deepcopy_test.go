@@ -364,7 +364,7 @@ uint64Slice:
 	cpyUi64, ok := cpy.([]uint64)
 	if !ok {
 		t.Errorf("copy of []uint64: expected the interface to contain a []uint64; it didn't")
-		goto done
+		goto complex64
 	}
 	if len(cpyUi64) != len(uint64SliceOrig) {
 		t.Errorf("[]uint64: len of copy was %d; want %d", len(cpyUi64), len(uint64SliceOrig))
@@ -375,6 +375,63 @@ uint64Slice:
 	for i, v := range uint64SliceOrig {
 		if v != cpyUi64[i] {
 			t.Errorf("[]uint64: got %d at index %d of the copy; want %d", cpyUi64[i], i, v)
+		}
+	}
+
+complex64:
+	complex64SliceOrig := []complex64{complex64(-65 + 11i), complex64(66 + 10i)}
+	cpy = Copy(complex64SliceOrig)
+	cpyC64, ok := cpy.([]complex64)
+	if !ok {
+		t.Errorf("copy of []complex64: expected the interface to contain a []complex64; it didn't")
+		goto complex128
+	}
+	if len(cpyC64) != len(complex64SliceOrig) {
+		t.Errorf("[]complex64: len of copy was %d; want %d", len(cpyC64), len(complex64SliceOrig))
+	}
+	if &cpyC64 == &complex64SliceOrig {
+		t.Error("[]complex64: address of copy was the same as original; they should be different")
+	}
+	for i, v := range complex64SliceOrig {
+		if v != cpyC64[i] {
+			t.Errorf("[]complex64: got %v at index %d of the copy; want %v", cpyC64[i], i, v)
+		}
+	}
+
+complex128:
+	complex128SliceOrig := []complex128{complex128(-65 + 11i), complex128(66 + 10i)}
+	cpy = Copy(complex128SliceOrig)
+	cpyC128, ok := cpy.([]complex128)
+	if !ok {
+		t.Errorf("copy of []complex128: expected the interface to contain a []complex128; it didn't")
+		goto arr4
+	}
+	if len(cpyC128) != len(complex128SliceOrig) {
+		t.Errorf("[]complex128: len of copy was %d; want %d", len(cpyC128), len(complex128SliceOrig))
+	}
+	if &cpyC128 == &complex128SliceOrig {
+		t.Error("[]complex128: address of copy was the same as original; they should be different")
+	}
+	for i, v := range complex128SliceOrig {
+		if v != cpyC128[i] {
+			t.Errorf("[]complex128: got %v at index %d of the copy; want %v", cpyC128[i], i, v)
+		}
+	}
+
+arr4:
+	arr4Array := [...]string{"a", "b", "c", "d"}
+	cpy = Copy(arr4Array)
+	cpyArr4, ok := cpy.([4]string)
+	if !ok {
+		t.Errorf("copy of [4]string: expected the interface to contain a [4]string; it didn't")
+		goto done
+	}
+	if &cpyArr4 == &arr4Array {
+		t.Error("[4]string: address of copy was the same as original; they should be different")
+	}
+	for i, v := range arr4Array {
+		if v != cpyArr4[i] {
+			t.Errorf("[4]string: got %s at index %d of the copy; want %s", cpyArr4[i], i, v)
 		}
 	}
 
