@@ -72,9 +72,11 @@ func TestRecursiveCopySlices(t *testing.T) {
 	}
 	if len(cpyS) != len(stringSliceOrig) {
 		t.Errorf("[]string: len of copy was %d; want %d", len(cpyS), len(stringSliceOrig))
+		goto intSlice
 	}
 	if &cpyS == &stringSliceOrig {
 		t.Error("[]string: address of copy was the same as original; they should be different")
+		goto intSlice
 	}
 	for i, v := range stringSliceOrig {
 		if v != cpyS[i] {
@@ -91,9 +93,11 @@ intSlice:
 	}
 	if len(cpyI) != len(intSliceOrig) {
 		t.Errorf("[]int: len of copy was %d; want %d", len(cpyI), len(intSliceOrig))
+		goto int8Slice
 	}
 	if &cpyI == &intSliceOrig {
 		t.Error("[]int: address of copy was the same as original; they should be different")
+		goto int8Slice
 	}
 	for i, v := range intSliceOrig {
 		if v != cpyI[i] {
@@ -111,9 +115,11 @@ int8Slice:
 	}
 	if len(cpyI8) != len(int8SliceOrig) {
 		t.Errorf("[]int8: len of copy was %d; want %d", len(cpyI8), len(int8SliceOrig))
+		goto int16Slice
 	}
 	if &cpyI8 == &int8SliceOrig {
 		t.Error("[]int8: address of copy was the same as original; they should be different")
+		goto int16Slice
 	}
 	for i, v := range int8SliceOrig {
 		if v != cpyI8[i] {
@@ -131,9 +137,11 @@ int16Slice:
 	}
 	if len(cpyI16) != len(int16SliceOrig) {
 		t.Errorf("[]int16: len of copy was %d; want %d", len(cpyI16), len(int16SliceOrig))
+		goto int32Slice
 	}
 	if &cpyI16 == &int16SliceOrig {
 		t.Error("[]int16: address of copy was the same as original; they should be different")
+		goto int32Slice
 	}
 	for i, v := range int16SliceOrig {
 		if v != cpyI16[i] {
@@ -151,9 +159,11 @@ int32Slice:
 	}
 	if len(cpyI32) != len(int32SliceOrig) {
 		t.Errorf("[]int32: len of copy was %d; want %d", len(cpyI32), len(int32SliceOrig))
+		goto int64Slice
 	}
 	if &cpyI32 == &int32SliceOrig {
 		t.Error("[]int32: address of copy was the same as original; they should be different")
+		goto int64Slice
 	}
 	for i, v := range int32SliceOrig {
 		if v != cpyI32[i] {
@@ -171,9 +181,11 @@ int64Slice:
 	}
 	if len(cpyI64) != len(int64SliceOrig) {
 		t.Errorf("[]int64: len of copy was %d; want %d", len(cpyI64), len(int64SliceOrig))
+		goto float32Slice
 	}
 	if &cpyI64 == &int64SliceOrig {
 		t.Error("[]int64: address of copy was the same as original; they should be different")
+		goto float32Slice
 	}
 	for i, v := range int64SliceOrig {
 		if v != cpyI64[i] {
@@ -191,9 +203,11 @@ float32Slice:
 	}
 	if len(cpyF32) != len(float32SliceOrig) {
 		t.Errorf("[]float32: len of copy was %d; want %d", len(cpyF32), len(float32SliceOrig))
+		goto float64Slice
 	}
 	if &cpyF32 == &float32SliceOrig {
 		t.Error("[]float32: address of copy was the same as original; they should be different")
+		goto float64Slice
 	}
 	for i, v := range float32SliceOrig {
 		if v != cpyF32[i] {
@@ -211,9 +225,11 @@ float64Slice:
 	}
 	if len(cpyF64) != len(float64SliceOrig) {
 		t.Errorf("[]float64: len of copy was %d; want %d", len(cpyF64), len(float64SliceOrig))
+		goto boolSlice
 	}
 	if &cpyF64 == &float64SliceOrig {
 		t.Error("[]float64: address of copy was the same as original; they should be different")
+		goto boolSlice
 	}
 	for i, v := range float64SliceOrig {
 		if v != cpyF64[i] {
@@ -231,9 +247,11 @@ boolSlice:
 	}
 	if len(cpyB) != len(boolSliceOrig) {
 		t.Errorf("[]bool: len of copy was %d; want %d", len(cpyB), len(boolSliceOrig))
+		goto infSlice
 	}
 	if &cpyB == &boolSliceOrig {
 		t.Error("[]bool: address of copy was the same as original; they should be different")
+		goto infSlice
 	}
 	for i, v := range boolSliceOrig {
 		if v != cpyB[i] {
@@ -251,9 +269,11 @@ infSlice:
 	}
 	if len(cpyInf) != len(infSliceOrig) {
 		t.Errorf("[]interface{}: len of copy was %d; want %d", len(cpyInf), len(infSliceOrig))
+		goto byteSlice
 	}
 	if &cpyInf == &infSliceOrig {
 		t.Error("[]interface{}: address of copy was the same as original; they should be different")
+		goto byteSlice
 	}
 	for i, v := range infSliceOrig {
 		if v != cpyInf[i] {
@@ -271,9 +291,11 @@ byteSlice:
 	}
 	if len(cpyByte) != len(byteSlice) {
 		t.Errorf("[]byte: len of copy was %d; want %d", len(cpyByte), len(byteSlice))
+		goto uintSlice
 	}
 	if &cpyByte == &byteSlice {
 		t.Error("[]byte: address of copy was the same as original; they should be different")
+		goto uintSlice
 	}
 	if string(cpyByte) != string(byteSlice) {
 		t.Errorf("[]byte: got %s; want %s", string(cpyByte), string(byteSlice))
@@ -289,9 +311,11 @@ uintSlice:
 	}
 	if len(cpyUi) != len(uintSliceOrig) {
 		t.Errorf("[]uint: len of copy was %d; want %d", len(cpyUi), len(uintSliceOrig))
+		goto uint8Slice
 	}
 	if &cpyUi == &uintSliceOrig {
 		t.Error("[]uint: address of copy was the same as original; they should be different")
+		goto uint8Slice
 	}
 	for i, v := range uintSliceOrig {
 		if v != cpyUi[i] {
@@ -309,9 +333,11 @@ uint8Slice:
 	}
 	if len(cpyUi8) != len(uint8SliceOrig) {
 		t.Errorf("[]uint8: len of copy was %d; want %d", len(cpyUi8), len(uint8SliceOrig))
+		goto uint16Slice
 	}
 	if &cpyUi8 == &uint8SliceOrig {
 		t.Error("[]uint8: address of copy was the same as original; they should be different")
+		goto uint16Slice
 	}
 	for i, v := range uint8SliceOrig {
 		if v != cpyUi8[i] {
@@ -329,9 +355,11 @@ uint16Slice:
 	}
 	if len(cpyUi16) != len(uint16SliceOrig) {
 		t.Errorf("[]uint16: len of copy was %d; want %d", len(cpyUi16), len(uint16SliceOrig))
+		goto uint32Slice
 	}
 	if &cpyUi16 == &uint16SliceOrig {
 		t.Error("[]uint16: address of copy was the same as original; they should be different")
+		goto uint32Slice
 	}
 	for i, v := range uint16SliceOrig {
 		if v != cpyUi16[i] {
@@ -349,9 +377,11 @@ uint32Slice:
 	}
 	if len(cpyUi32) != len(uint32SliceOrig) {
 		t.Errorf("[]uint32: len of copy was %d; want %d", len(cpyUi32), len(uint32SliceOrig))
+		goto uint64Slice
 	}
 	if &cpyUi32 == &uint32SliceOrig {
 		t.Error("[]uint32: address of copy was the same as original; they should be different")
+		goto uint64Slice
 	}
 	for i, v := range uint32SliceOrig {
 		if v != cpyUi32[i] {
@@ -365,13 +395,15 @@ uint64Slice:
 	cpyUi64, ok := cpy.([]uint64)
 	if !ok {
 		t.Errorf("copy of []uint64: expected the interface to contain a []uint64; it didn't")
-		goto complex64
+		goto complex64Slice
 	}
 	if len(cpyUi64) != len(uint64SliceOrig) {
 		t.Errorf("[]uint64: len of copy was %d; want %d", len(cpyUi64), len(uint64SliceOrig))
+		goto complex64Slice
 	}
 	if &cpyUi64 == &uint64SliceOrig {
 		t.Error("[]uint64: address of copy was the same as original; they should be different")
+		goto complex64Slice
 	}
 	for i, v := range uint64SliceOrig {
 		if v != cpyUi64[i] {
@@ -379,19 +411,21 @@ uint64Slice:
 		}
 	}
 
-complex64:
+complex64Slice:
 	complex64SliceOrig := []complex64{complex64(-65 + 11i), complex64(66 + 10i)}
 	cpy = Copy(complex64SliceOrig)
 	cpyC64, ok := cpy.([]complex64)
 	if !ok {
 		t.Errorf("copy of []complex64: expected the interface to contain a []complex64; it didn't")
-		goto complex128
+		goto complex128Slice
 	}
 	if len(cpyC64) != len(complex64SliceOrig) {
 		t.Errorf("[]complex64: len of copy was %d; want %d", len(cpyC64), len(complex64SliceOrig))
+		goto complex128Slice
 	}
 	if &cpyC64 == &complex64SliceOrig {
 		t.Error("[]complex64: address of copy was the same as original; they should be different")
+		goto complex128Slice
 	}
 	for i, v := range complex64SliceOrig {
 		if v != cpyC64[i] {
@@ -399,7 +433,7 @@ complex64:
 		}
 	}
 
-complex128:
+complex128Slice:
 	complex128SliceOrig := []complex128{complex128(-65 + 11i), complex128(66 + 10i)}
 	cpy = Copy(complex128SliceOrig)
 	cpyC128, ok := cpy.([]complex128)
@@ -409,9 +443,11 @@ complex128:
 	}
 	if len(cpyC128) != len(complex128SliceOrig) {
 		t.Errorf("[]complex128: len of copy was %d; want %d", len(cpyC128), len(complex128SliceOrig))
+		goto arr4
 	}
 	if &cpyC128 == &complex128SliceOrig {
 		t.Error("[]complex128: address of copy was the same as original; they should be different")
+		goto arr4
 	}
 	for i, v := range complex128SliceOrig {
 		if v != cpyC128[i] {
@@ -429,6 +465,7 @@ arr4:
 	}
 	if &cpyArr4 == &arr4Array {
 		t.Error("[4]string: address of copy was the same as original; they should be different")
+		goto done
 	}
 	for i, v := range arr4Array {
 		if v != cpyArr4[i] {
