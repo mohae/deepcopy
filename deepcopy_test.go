@@ -55,425 +55,591 @@ func TestIntSlice(t *testing.T) {
 	}
 }
 
-// These tests test that all supported basic types are copied correctly.  This
-// is done by copying a []T.
-func TestRecursiveCopySlices(t *testing.T) {
-	var tst interface{}
-	cpy := Copy(tst)
-	if cpy != nil {
-		t.Errorf("got %v; want nil", cpy)
-	}
-
-	cpy = Copy(stringSliceOrig)
+// just basic is this working stuff
+func TestSimple(t *testing.T) {
+	Strings := []string{"a", "b", "c"}
+	cpy := Copy(Strings)
 	cpyS, ok := cpy.([]string)
 	if !ok {
-		t.Errorf("copy of []string: expected the interface to contain a []string; it didn't")
-		goto intSlice
+		t.Errorf("copy []string: expected the interface to contain []string; it didn't")
+		goto TestBools
 	}
-	if len(cpyS) != len(stringSliceOrig) {
-		t.Errorf("[]string: len of copy was %d; want %d", len(cpyS), len(stringSliceOrig))
-		goto intSlice
-	}
-	if &cpyS == &stringSliceOrig {
+	if &(cpyS) == &(Strings) {
 		t.Error("[]string: address of copy was the same as original; they should be different")
-		goto intSlice
+		goto TestBools
 	}
-	for i, v := range stringSliceOrig {
+	if len(cpyS) != len(Strings) {
+		t.Errorf("[]string: len was %d; want %d", len(cpyS), len(Strings))
+		goto TestBools
+	}
+	for i, v := range Strings {
 		if v != cpyS[i] {
-			t.Errorf("[]string: got %s at index %d of the copy; want %s", cpyS[i], i, v)
+			t.Errorf("[]string: got %v at index %d of the copy; want %v", cpyS[i], i, v)
 		}
 	}
 
-intSlice:
-	cpy = Copy(intSliceOrig)
-	cpyI, ok := cpy.([]int)
-	if !ok {
-		t.Errorf("copy of []int: expected the interface to contain a []int; it didn't")
-		goto int8Slice
-	}
-	if len(cpyI) != len(intSliceOrig) {
-		t.Errorf("[]int: len of copy was %d; want %d", len(cpyI), len(intSliceOrig))
-		goto int8Slice
-	}
-	if &cpyI == &intSliceOrig {
-		t.Error("[]int: address of copy was the same as original; they should be different")
-		goto int8Slice
-	}
-	for i, v := range intSliceOrig {
-		if v != cpyI[i] {
-			t.Errorf("[]int: got %d at index %d of the copy; want %d", cpyI[i], i, v)
-		}
-	}
-
-int8Slice:
-	int8SliceOrig := []int8{0, 1, 2, 3, 42}
-	cpy = Copy(int8SliceOrig)
-	cpyI8, ok := cpy.([]int8)
-	if !ok {
-		t.Errorf("copy of []int8: expected the interface to contain a []int8; it didn't")
-		goto int16Slice
-	}
-	if len(cpyI8) != len(int8SliceOrig) {
-		t.Errorf("[]int8: len of copy was %d; want %d", len(cpyI8), len(int8SliceOrig))
-		goto int16Slice
-	}
-	if &cpyI8 == &int8SliceOrig {
-		t.Error("[]int8: address of copy was the same as original; they should be different")
-		goto int16Slice
-	}
-	for i, v := range int8SliceOrig {
-		if v != cpyI8[i] {
-			t.Errorf("[]int8: got %d at index %d of the copy; want %d", cpyI8[i], i, v)
-		}
-	}
-
-int16Slice:
-	int16SliceOrig := []int16{0, 1, 2, 3, 42}
-	cpy = Copy(int16SliceOrig)
-	cpyI16, ok := cpy.([]int16)
-	if !ok {
-		t.Errorf("copy of []int16: expected the interface to contain a []int16; it didn't")
-		goto int32Slice
-	}
-	if len(cpyI16) != len(int16SliceOrig) {
-		t.Errorf("[]int16: len of copy was %d; want %d", len(cpyI16), len(int16SliceOrig))
-		goto int32Slice
-	}
-	if &cpyI16 == &int16SliceOrig {
-		t.Error("[]int16: address of copy was the same as original; they should be different")
-		goto int32Slice
-	}
-	for i, v := range int16SliceOrig {
-		if v != cpyI16[i] {
-			t.Errorf("[]int16: got %d at index %d of the copy; want %d", cpyI16[i], i, v)
-		}
-	}
-
-int32Slice:
-	int32SliceOrig := []int32{0, 1, 2, 3, 42}
-	cpy = Copy(int32SliceOrig)
-	cpyI32, ok := cpy.([]int32)
-	if !ok {
-		t.Errorf("copy of []int32: expected the interface to contain a []int32; it didn't")
-		goto int64Slice
-	}
-	if len(cpyI32) != len(int32SliceOrig) {
-		t.Errorf("[]int32: len of copy was %d; want %d", len(cpyI32), len(int32SliceOrig))
-		goto int64Slice
-	}
-	if &cpyI32 == &int32SliceOrig {
-		t.Error("[]int32: address of copy was the same as original; they should be different")
-		goto int64Slice
-	}
-	for i, v := range int32SliceOrig {
-		if v != cpyI32[i] {
-			t.Errorf("[]int32: got %d at index %d of the copy; want %d", cpyI32[i], i, v)
-		}
-	}
-
-int64Slice:
-	int64SliceOrig := []int64{0, 1, 2, 3, 42}
-	cpy = Copy(int64SliceOrig)
-	cpyI64, ok := cpy.([]int64)
-	if !ok {
-		t.Errorf("copy of []int64: expected the interface to contain a []int64; it didn't")
-		goto float32Slice
-	}
-	if len(cpyI64) != len(int64SliceOrig) {
-		t.Errorf("[]int64: len of copy was %d; want %d", len(cpyI64), len(int64SliceOrig))
-		goto float32Slice
-	}
-	if &cpyI64 == &int64SliceOrig {
-		t.Error("[]int64: address of copy was the same as original; they should be different")
-		goto float32Slice
-	}
-	for i, v := range int64SliceOrig {
-		if v != cpyI64[i] {
-			t.Errorf("[]int64: got %d at index %d of the copy; want %d", cpyI64[i], i, v)
-		}
-	}
-
-float32Slice:
-	float32SliceOrig := []float32{0, 1, 2, 3, 42}
-	cpy = Copy(float32SliceOrig)
-	cpyF32, ok := cpy.([]float32)
-	if !ok {
-		t.Errorf("copy of []float32: expected the interface to contain a []float32; it didn't")
-		goto float64Slice
-	}
-	if len(cpyF32) != len(float32SliceOrig) {
-		t.Errorf("[]float32: len of copy was %d; want %d", len(cpyF32), len(float32SliceOrig))
-		goto float64Slice
-	}
-	if &cpyF32 == &float32SliceOrig {
-		t.Error("[]float32: address of copy was the same as original; they should be different")
-		goto float64Slice
-	}
-	for i, v := range float32SliceOrig {
-		if v != cpyF32[i] {
-			t.Errorf("[]float32: got %f at index %d of the copy; want %f", cpyF32[i], i, v)
-		}
-	}
-
-float64Slice:
-	float64SliceOrig := []float64{0, 1, 2, 3, 42}
-	cpy = Copy(float64SliceOrig)
-	cpyF64, ok := cpy.([]float64)
-	if !ok {
-		t.Errorf("copy of []float64: expected the interface to contain a []float64; it didn't")
-		goto boolSlice
-	}
-	if len(cpyF64) != len(float64SliceOrig) {
-		t.Errorf("[]float64: len of copy was %d; want %d", len(cpyF64), len(float64SliceOrig))
-		goto boolSlice
-	}
-	if &cpyF64 == &float64SliceOrig {
-		t.Error("[]float64: address of copy was the same as original; they should be different")
-		goto boolSlice
-	}
-	for i, v := range float64SliceOrig {
-		if v != cpyF64[i] {
-			t.Errorf("[]float64: got %f at index %d of the copy; want %f", cpyF64[i], i, v)
-		}
-	}
-
-boolSlice:
-	boolSliceOrig := []bool{true, false, false, true}
-	cpy = Copy(boolSliceOrig)
+TestBools:
+	Bools := []bool{true, true, false, false}
+	cpy = Copy(Bools)
 	cpyB, ok := cpy.([]bool)
 	if !ok {
-		t.Errorf("copy of []bool: expected the interface to contain a []bool; it didn't")
-		goto infSlice
+		t.Errorf("copy []bool: expected the interface to contain []bool; it didn't")
+		goto TestBytes
 	}
-	if len(cpyB) != len(boolSliceOrig) {
-		t.Errorf("[]bool: len of copy was %d; want %d", len(cpyB), len(boolSliceOrig))
-		goto infSlice
-	}
-	if &cpyB == &boolSliceOrig {
+	if &(cpyB) == &(Bools) {
 		t.Error("[]bool: address of copy was the same as original; they should be different")
-		goto infSlice
+		goto TestBytes
 	}
-	for i, v := range boolSliceOrig {
+	if len(cpyB) != len(Bools) {
+		t.Errorf("[]bool: len was %d; want %d", len(cpyB), len(Bools))
+		goto TestBytes
+	}
+	for i, v := range Bools {
 		if v != cpyB[i] {
-			t.Errorf("[]bool: got %t at index %d of the copy; want %t", cpyB[i], i, v)
+			t.Errorf("[]bool: got %v at index %d of the copy; want %v", cpyB[i], i, v)
 		}
 	}
 
-infSlice:
-	infSliceOrig := []interface{}{true, 1, "hello"}
-	cpy = Copy(infSliceOrig)
-	cpyInf, ok := cpy.([]interface{})
+TestBytes:
+	Bytes := []byte("hello")
+	cpy = Copy(Bytes)
+	cpyBt, ok := cpy.([]byte)
 	if !ok {
-		t.Errorf("copy of []interface{}: expected the interface to contain a []interface{}; it didn't")
-		goto byteSlice
+		t.Errorf("copy []byte: expected the interface to contain []byte; it didn't")
+		goto CopyInts
 	}
-	if len(cpyInf) != len(infSliceOrig) {
-		t.Errorf("[]interface{}: len of copy was %d; want %d", len(cpyInf), len(infSliceOrig))
-		goto byteSlice
-	}
-	if &cpyInf == &infSliceOrig {
-		t.Error("[]interface{}: address of copy was the same as original; they should be different")
-		goto byteSlice
-	}
-	for i, v := range infSliceOrig {
-		if v != cpyInf[i] {
-			t.Errorf("[]interface{}: got %v at index %d of the copy; want %v", cpyInf[i], i, v)
-		}
-	}
-
-byteSlice:
-	byteSlice := []byte("hello")
-	cpy = Copy(byteSlice)
-	cpyByte, ok := cpy.([]byte)
-	if !ok {
-		t.Errorf("copy of []byte: expected the interface to contain a []byte; it didn't")
-		goto uintSlice
-	}
-	if len(cpyByte) != len(byteSlice) {
-		t.Errorf("[]byte: len of copy was %d; want %d", len(cpyByte), len(byteSlice))
-		goto uintSlice
-	}
-	if &cpyByte == &byteSlice {
+	if &(cpyBt) == &(Bytes) {
 		t.Error("[]byte: address of copy was the same as original; they should be different")
-		goto uintSlice
+		goto CopyInts
 	}
-	if string(cpyByte) != string(byteSlice) {
-		t.Errorf("[]byte: got %s; want %s", string(cpyByte), string(byteSlice))
+	if len(cpyBt) != len(Bytes) {
+		t.Errorf("[]byte: len was %d; want %d", len(cpyBt), len(Bytes))
+		goto CopyInts
+	}
+	for i, v := range Bytes {
+		if v != cpyBt[i] {
+			t.Errorf("[]byte: got %v at index %d of the copy; want %v", cpyBt[i], i, v)
+		}
 	}
 
-uintSlice:
-	uintSliceOrig := []uint{0, 1, 2, 3, 42}
-	cpy = Copy(uintSliceOrig)
-	cpyUi, ok := cpy.([]uint)
+CopyInts:
+	Ints := []int{42}
+	cpy = Copy(Ints)
+	cpyI, ok := cpy.([]int)
 	if !ok {
-		t.Errorf("copy of []uint: expected the interface to contain a []uint; it didn't")
-		goto uint8Slice
+		t.Errorf("copy []int: expected the interface to contain []int; it didn't")
+		goto CopyUints
 	}
-	if len(cpyUi) != len(uintSliceOrig) {
-		t.Errorf("[]uint: len of copy was %d; want %d", len(cpyUi), len(uintSliceOrig))
-		goto uint8Slice
+	if &(cpyI) == &(Ints) {
+		t.Error("[]int: address of copy was the same as original; they should be different")
+		goto CopyUints
 	}
-	if &cpyUi == &uintSliceOrig {
+	if len(cpyI) != len(Ints) {
+		t.Errorf("[]int: len was %d; want %d", len(cpyI), len(Ints))
+		goto CopyUints
+	}
+	for i, v := range Ints {
+		if v != cpyI[i] {
+			t.Errorf("[]int: got %v at index %d of the copy; want %v", cpyI[i], i, v)
+		}
+	}
+
+CopyUints:
+	Uints := []uint{1, 2, 3, 4, 5}
+	cpy = Copy(Uints)
+	cpyU, ok := cpy.([]uint)
+	if !ok {
+		t.Errorf("copy []uint: expected the interface to contain []uint; it didn't")
+		goto CopyFloat32s
+	}
+	if &(cpyU) == &(Uints) {
 		t.Error("[]uint: address of copy was the same as original; they should be different")
-		goto uint8Slice
+		goto CopyFloat32s
 	}
-	for i, v := range uintSliceOrig {
-		if v != cpyUi[i] {
-			t.Errorf("[]uint: got %d at index %d of the copy; want %d", cpyUi[i], i, v)
+	if len(cpyU) != len(Uints) {
+		t.Errorf("[]uint: len was %d; want %d", len(cpyU), len(Uints))
+		goto CopyFloat32s
+	}
+	for i, v := range Uints {
+		if v != cpyU[i] {
+			t.Errorf("[]uint: got %v at index %d of the copy; want %v", cpyU[i], i, v)
 		}
 	}
 
-uint8Slice:
-	uint8SliceOrig := []uint8{0, 1, 2, 3, 42}
-	cpy = Copy(uint8SliceOrig)
-	cpyUi8, ok := cpy.([]uint8)
+CopyFloat32s:
+	Float32s := []float32{3.14}
+	cpy = Copy(Float32s)
+	cpyF, ok := cpy.([]float32)
 	if !ok {
-		t.Errorf("copy of []uint8: expected the interface to contain a []uint8; it didn't")
-		goto uint16Slice
+		t.Errorf("copy []float32: expected the interface to contain []float32; it didn't")
+		goto CopyInterfaces
 	}
-	if len(cpyUi8) != len(uint8SliceOrig) {
-		t.Errorf("[]uint8: len of copy was %d; want %d", len(cpyUi8), len(uint8SliceOrig))
-		goto uint16Slice
+	if &(cpyF) == &(Float32s) {
+		t.Error("[]float32: address of copy was the same as original; they should be different")
+		goto CopyInterfaces
 	}
-	if &cpyUi8 == &uint8SliceOrig {
-		t.Error("[]uint8: address of copy was the same as original; they should be different")
-		goto uint16Slice
+	if len(cpyF) != len(Float32s) {
+		t.Errorf("[]float32: len was %d; want %d", len(cpyF), len(Float32s))
+		goto CopyInterfaces
 	}
-	for i, v := range uint8SliceOrig {
-		if v != cpyUi8[i] {
-			t.Errorf("[]uint8: got %d at index %d of the copy; want %d", cpyUi8[i], i, v)
+	for i, v := range Float32s {
+		if v != cpyF[i] {
+			t.Errorf("[]float32: got %v at index %d of the copy; want %v", cpyF[i], i, v)
 		}
 	}
 
-uint16Slice:
-	uint16SliceOrig := []uint16{0, 1, 2, 3, 42}
-	cpy = Copy(uint16SliceOrig)
-	cpyUi16, ok := cpy.([]uint16)
+CopyInterfaces:
+	Interfaces := []interface{}{"a", 42, true, 4.32}
+	cpy = Copy(Interfaces)
+	cpyIf, ok := cpy.([]interface{})
 	if !ok {
-		t.Errorf("copy of []uint16: expected the interface to contain a []uint16; it didn't")
-		goto uint32Slice
+		t.Errorf("copy []interface{}: expected the interface to contain []interface{}; it didn't")
+		return
 	}
-	if len(cpyUi16) != len(uint16SliceOrig) {
-		t.Errorf("[]uint16: len of copy was %d; want %d", len(cpyUi16), len(uint16SliceOrig))
-		goto uint32Slice
+	if &(cpyIf) == &(Interfaces) {
+		t.Error("[]interface{}: address of copy was the same as original; they should be different")
+		return
 	}
-	if &cpyUi16 == &uint16SliceOrig {
-		t.Error("[]uint16: address of copy was the same as original; they should be different")
-		goto uint32Slice
+	if len(cpyIf) != len(Interfaces) {
+		t.Errorf("[]interface{}: len was %d; want %d", len(cpyIf), len(Interfaces))
+		return
 	}
-	for i, v := range uint16SliceOrig {
-		if v != cpyUi16[i] {
-			t.Errorf("[]uint16: got %d at index %d of the copy; want %d", cpyUi16[i], i, v)
+	for i, v := range Interfaces {
+		if v != cpyIf[i] {
+			t.Errorf("[]interface{}: got %v at index %d of the copy; want %v", cpyIf[i], i, v)
 		}
 	}
+}
 
-uint32Slice:
-	uint32SliceOrig := []uint32{0, 1, 2, 3, 42}
-	cpy = Copy(uint32SliceOrig)
-	cpyUi32, ok := cpy.([]uint32)
+type Basics struct {
+	String      string
+	Strings     []string
+	StringArr   [4]string
+	Bool        bool
+	Bools       []bool
+	Byte        byte
+	Bytes       []byte
+	Int         int
+	Ints        []int
+	Int8        int8
+	Int8s       []int8
+	Int16       int16
+	Int16s      []int16
+	Int32       int32
+	Int32s      []int32
+	Int64       int64
+	Int64s      []int64
+	Uint        uint
+	Uints       []uint
+	Uint8       uint8
+	Uint8s      []uint8
+	Uint16      uint16
+	Uint16s     []uint16
+	Uint32      uint32
+	Uint32s     []uint32
+	Uint64      uint64
+	Uint64s     []uint64
+	Float32     float32
+	Float32s    []float32
+	Float64     float64
+	Float64s    []float64
+	Complex64   complex64
+	Complex64s  []complex64
+	Complex128  complex128
+	Complex128s []complex128
+	Interface   interface{}
+	Interfaces  []interface{}
+}
+
+// These tests test that all supported basic types are copied correctly.  This
+// is done by copying a struct with fields of most of the basic types as []T.
+func TestMostTypes(t *testing.T) {
+	test := Basics{
+		String:      "kimchi",
+		Strings:     []string{"uni", "ika"},
+		StringArr:   [4]string{"malort", "barenjager", "fernet", "salmiakki"},
+		Bool:        true,
+		Bools:       []bool{true, false, true},
+		Byte:        'z',
+		Bytes:       []byte("abc"),
+		Int:         42,
+		Ints:        []int{0, 1, 3, 4},
+		Int8:        8,
+		Int8s:       []int8{8, 9, 10},
+		Int16:       16,
+		Int16s:      []int16{16, 17, 18, 19},
+		Int32:       32,
+		Int32s:      []int32{32, 33},
+		Int64:       64,
+		Int64s:      []int64{64},
+		Uint:        420,
+		Uints:       []uint{11, 12, 13},
+		Uint8:       81,
+		Uint8s:      []uint8{81, 82},
+		Uint16:      160,
+		Uint16s:     []uint16{160, 161, 162, 163, 164},
+		Uint32:      320,
+		Uint32s:     []uint32{320, 321},
+		Uint64:      640,
+		Uint64s:     []uint64{6400, 6401, 6402, 6403},
+		Float32:     32.32,
+		Float32s:    []float32{32.32, 33},
+		Float64:     64.1,
+		Float64s:    []float64{64, 65, 66},
+		Complex64:   complex64(-64 + 12i),
+		Complex64s:  []complex64{complex64(-65 + 11i), complex64(66 + 10i)},
+		Complex128:  complex128(-128 + 12i),
+		Complex128s: []complex128{complex128(-128 + 11i), complex128(129 + 10i)},
+		Interfaces:  []interface{}{42, true, "pan-galactic"},
+	}
+
+	cpy := Copy(test)
+	basic, ok := cpy.(Basics)
 	if !ok {
-		t.Errorf("copy of []uint32: expected the interface to contain a []uint32; it didn't")
-		goto uint64Slice
+		t.Errorf("copy of Basics: expected the interface to contain a Basics struct; it didn't")
+		return
 	}
-	if len(cpyUi32) != len(uint32SliceOrig) {
-		t.Errorf("[]uint32: len of copy was %d; want %d", len(cpyUi32), len(uint32SliceOrig))
-		goto uint64Slice
+
+	// see if they point to the same location
+	if fmt.Sprintf("%p", &basic) == fmt.Sprintf("%p", &test) {
+		t.Error("address of copy was the same as original; they should be different")
+		return
 	}
-	if &cpyUi32 == &uint32SliceOrig {
-		t.Error("[]uint32: address of copy was the same as original; they should be different")
-		goto uint64Slice
+
+	// Go through each field and check to see it got copied properly
+	if basic.String != test.String {
+		t.Errorf("String: got %v; want %v", basic.String, test.String)
 	}
-	for i, v := range uint32SliceOrig {
-		if v != cpyUi32[i] {
-			t.Errorf("[]uint32: got %d at index %d of the copy; want %d", cpyUi32[i], i, v)
+	if &(basic.Strings) == &(test.Strings) {
+		t.Error("Strings: address of copy was the same as original; they should be different")
+		goto StringArr
+	}
+	if len(basic.Strings) != len(test.Strings) {
+		t.Errorf("Strings: len was %d; want %d", len(basic.Strings), len(test.Strings))
+		goto StringArr
+	}
+	for i, v := range test.Strings {
+		if v != basic.Strings[i] {
+			t.Errorf("Strings: got %v at index %d of the copy; want %v", basic.Strings[i], i, v)
 		}
 	}
 
-uint64Slice:
-	uint64SliceOrig := []uint64{0, 1, 2, 3, 42}
-	cpy = Copy(uint64SliceOrig)
-	cpyUi64, ok := cpy.([]uint64)
-	if !ok {
-		t.Errorf("copy of []uint64: expected the interface to contain a []uint64; it didn't")
-		goto complex64Slice
+StringArr:
+	if &(basic.StringArr) == &(test.StringArr) {
+		t.Error("StringArr: address of copy was the same as original; they should be different")
+		goto Bools
 	}
-	if len(cpyUi64) != len(uint64SliceOrig) {
-		t.Errorf("[]uint64: len of copy was %d; want %d", len(cpyUi64), len(uint64SliceOrig))
-		goto complex64Slice
-	}
-	if &cpyUi64 == &uint64SliceOrig {
-		t.Error("[]uint64: address of copy was the same as original; they should be different")
-		goto complex64Slice
-	}
-	for i, v := range uint64SliceOrig {
-		if v != cpyUi64[i] {
-			t.Errorf("[]uint64: got %d at index %d of the copy; want %d", cpyUi64[i], i, v)
+	for i, v := range test.StringArr {
+		if v != basic.StringArr[i] {
+			t.Errorf("StringArr: got %v at index %d of the copy; want %v", basic.StringArr[i], i, v)
 		}
 	}
 
-complex64Slice:
-	complex64SliceOrig := []complex64{complex64(-65 + 11i), complex64(66 + 10i)}
-	cpy = Copy(complex64SliceOrig)
-	cpyC64, ok := cpy.([]complex64)
-	if !ok {
-		t.Errorf("copy of []complex64: expected the interface to contain a []complex64; it didn't")
-		goto complex128Slice
+Bools:
+	if basic.Bool != test.Bool {
+		t.Errorf("Bool: got %v; want %v", basic.Bool, test.Bool)
 	}
-	if len(cpyC64) != len(complex64SliceOrig) {
-		t.Errorf("[]complex64: len of copy was %d; want %d", len(cpyC64), len(complex64SliceOrig))
-		goto complex128Slice
+	if &(basic.Bools) == &(test.Bools) {
+		t.Error("Bools: address of copy was the same as original; they should be different")
+		goto Bytes
 	}
-	if &cpyC64 == &complex64SliceOrig {
-		t.Error("[]complex64: address of copy was the same as original; they should be different")
-		goto complex128Slice
+	if len(basic.Bools) != len(test.Bools) {
+		t.Errorf("Bools: len was %d; want %d", len(basic.Bools), len(test.Bools))
+		goto Bytes
 	}
-	for i, v := range complex64SliceOrig {
-		if v != cpyC64[i] {
-			t.Errorf("[]complex64: got %v at index %d of the copy; want %v", cpyC64[i], i, v)
+	for i, v := range test.Bools {
+		if v != basic.Bools[i] {
+			t.Errorf("Bools: got %v at index %d of the copy; want %v", basic.Bools[i], i, v)
 		}
 	}
 
-complex128Slice:
-	complex128SliceOrig := []complex128{complex128(-65 + 11i), complex128(66 + 10i)}
-	cpy = Copy(complex128SliceOrig)
-	cpyC128, ok := cpy.([]complex128)
-	if !ok {
-		t.Errorf("copy of []complex128: expected the interface to contain a []complex128; it didn't")
-		goto arr4
+Bytes:
+	if basic.Byte != test.Byte {
+		t.Errorf("Byte: got %v; want %v", basic.Byte, test.Byte)
 	}
-	if len(cpyC128) != len(complex128SliceOrig) {
-		t.Errorf("[]complex128: len of copy was %d; want %d", len(cpyC128), len(complex128SliceOrig))
-		goto arr4
+	if &(basic.Bytes) == &(test.Bytes) {
+		t.Error("Bytes: address of copy was the same as original; they should be different")
+		goto Ints
 	}
-	if &cpyC128 == &complex128SliceOrig {
-		t.Error("[]complex128: address of copy was the same as original; they should be different")
-		goto arr4
+	if len(basic.Bytes) != len(test.Bytes) {
+		t.Errorf("Bytes: len was %d; want %d", len(basic.Bytes), len(test.Bytes))
+		goto Ints
 	}
-	for i, v := range complex128SliceOrig {
-		if v != cpyC128[i] {
-			t.Errorf("[]complex128: got %v at index %d of the copy; want %v", cpyC128[i], i, v)
+	for i, v := range test.Bytes {
+		if v != basic.Bytes[i] {
+			t.Errorf("Bytes: got %v at index %d of the copy; want %v", basic.Bytes[i], i, v)
 		}
 	}
 
-arr4:
-	arr4Array := [...]string{"a", "b", "c", "d"}
-	cpy = Copy(arr4Array)
-	cpyArr4, ok := cpy.([4]string)
-	if !ok {
-		t.Errorf("copy of [4]string: expected the interface to contain a [4]string; it didn't")
-		goto done
+Ints:
+	if basic.Int != test.Int {
+		t.Errorf("Int: got %v; want %v", basic.Int, test.Int)
 	}
-	if &cpyArr4 == &arr4Array {
-		t.Error("[4]string: address of copy was the same as original; they should be different")
-		goto done
+	if &(basic.Ints) == &(test.Ints) {
+		t.Error("Ints: address of copy was the same as original; they should be different")
+		goto Int8s
 	}
-	for i, v := range arr4Array {
-		if v != cpyArr4[i] {
-			t.Errorf("[4]string: got %s at index %d of the copy; want %s", cpyArr4[i], i, v)
+	if len(basic.Ints) != len(test.Ints) {
+		t.Errorf("Ints: len was %d; want %d", len(basic.Ints), len(test.Ints))
+		goto Int8s
+	}
+	for i, v := range test.Ints {
+		if v != basic.Ints[i] {
+			t.Errorf("Ints: got %v at index %d of the copy; want %v", basic.Ints[i], i, v)
 		}
 	}
 
-done:
+Int8s:
+	if basic.Int8 != test.Int8 {
+		t.Errorf("Int8: got %v; want %v", basic.Int8, test.Int8)
+	}
+	if &(basic.Int8s) == &(test.Int8s) {
+		t.Error("Int8s: address of copy was the same as original; they should be different")
+		goto Int16s
+	}
+	if len(basic.Int8s) != len(test.Int8s) {
+		t.Errorf("Int8s: len was %d; want %d", len(basic.Int8s), len(test.Int8s))
+		goto Int16s
+	}
+	for i, v := range test.Int8s {
+		if v != basic.Int8s[i] {
+			t.Errorf("Int8s: got %v at index %d of the copy; want %v", basic.Int8s[i], i, v)
+		}
+	}
+
+Int16s:
+	if basic.Int16 != test.Int16 {
+		t.Errorf("Int16: got %v; want %v", basic.Int16, test.Int16)
+	}
+	if &(basic.Int16s) == &(test.Int16s) {
+		t.Error("Int16s: address of copy was the same as original; they should be different")
+		goto Int32s
+	}
+	if len(basic.Int16s) != len(test.Int16s) {
+		t.Errorf("Int16s: len was %d; want %d", len(basic.Int16s), len(test.Int16s))
+		goto Int32s
+	}
+	for i, v := range test.Int16s {
+		if v != basic.Int16s[i] {
+			t.Errorf("Int16s: got %v at index %d of the copy; want %v", basic.Int16s[i], i, v)
+		}
+	}
+
+Int32s:
+	if basic.Int32 != test.Int32 {
+		t.Errorf("Int32: got %v; want %v", basic.Int32, test.Int32)
+	}
+	if &(basic.Int32s) == &(test.Int32s) {
+		t.Error("Int32s: address of copy was the same as original; they should be different")
+		goto Int64s
+	}
+	if len(basic.Int32s) != len(test.Int32s) {
+		t.Errorf("Int32s: len was %d; want %d", len(basic.Int32s), len(test.Int32s))
+		goto Int64s
+	}
+	for i, v := range test.Int32s {
+		if v != basic.Int32s[i] {
+			t.Errorf("Int32s: got %v at index %d of the copy; want %v", basic.Int32s[i], i, v)
+		}
+	}
+
+Int64s:
+	if basic.Int64 != test.Int64 {
+		t.Errorf("Int64: got %v; want %v", basic.Int64, test.Int64)
+	}
+	if &(basic.Int64s) == &(test.Int64s) {
+		t.Error("Int64s: address of copy was the same as original; they should be different")
+		goto Uints
+	}
+	if len(basic.Int64s) != len(test.Int64s) {
+		t.Errorf("Int64s: len was %d; want %d", len(basic.Int64s), len(test.Int64s))
+		goto Uints
+	}
+	for i, v := range test.Int64s {
+		if v != basic.Int64s[i] {
+			t.Errorf("Int64s: got %v at index %d of the copy; want %v", basic.Int64s[i], i, v)
+		}
+	}
+
+Uints:
+	if basic.Uint != test.Uint {
+		t.Errorf("Uint: got %v; want %v", basic.Uint, test.Uint)
+	}
+	if &(basic.Uints) == &(test.Uints) {
+		t.Error("Uints: address of copy was the same as original; they should be different")
+		goto Uint8s
+	}
+	if len(basic.Uints) != len(test.Uints) {
+		t.Errorf("Uints: len was %d; want %d", len(basic.Uints), len(test.Uints))
+		goto Uint8s
+	}
+	for i, v := range test.Uints {
+		if v != basic.Uints[i] {
+			t.Errorf("Uints: got %v at index %d of the copy; want %v", basic.Uints[i], i, v)
+		}
+	}
+
+Uint8s:
+	if basic.Uint8 != test.Uint8 {
+		t.Errorf("Uint8: got %v; want %v", basic.Uint8, test.Uint8)
+	}
+	if &(basic.Uint8s) == &(test.Uint8s) {
+		t.Error("Uint8s: address of copy was the same as original; they should be different")
+		goto Uint16s
+	}
+	if len(basic.Uint8s) != len(test.Uint8s) {
+		t.Errorf("Uint8s: len was %d; want %d", len(basic.Uint8s), len(test.Uint8s))
+		goto Uint16s
+	}
+	for i, v := range test.Uint8s {
+		if v != basic.Uint8s[i] {
+			t.Errorf("Uint8s: got %v at index %d of the copy; want %v", basic.Uint8s[i], i, v)
+		}
+	}
+
+Uint16s:
+	if basic.Uint16 != test.Uint16 {
+		t.Errorf("Uint16: got %v; want %v", basic.Uint16, test.Uint16)
+	}
+	if &(basic.Uint16s) == &(test.Uint16s) {
+		t.Error("Uint16s: address of copy was the same as original; they should be different")
+		goto Uint32s
+	}
+	if len(basic.Uint16s) != len(test.Uint16s) {
+		t.Errorf("Uint16s: len was %d; want %d", len(basic.Uint16s), len(test.Uint16s))
+		goto Uint32s
+	}
+	for i, v := range test.Uint16s {
+		if v != basic.Uint16s[i] {
+			t.Errorf("Uint16s: got %v at index %d of the copy; want %v", basic.Uint16s[i], i, v)
+		}
+	}
+
+Uint32s:
+	if basic.Uint32 != test.Uint32 {
+		t.Errorf("Uint32: got %v; want %v", basic.Uint32, test.Uint32)
+	}
+	if &(basic.Uint32s) == &(test.Uint32s) {
+		t.Error("Uint32s: address of copy was the same as original; they should be different")
+		goto Uint64s
+	}
+	if len(basic.Uint32s) != len(test.Uint32s) {
+		t.Errorf("Uint32s: len was %d; want %d", len(basic.Uint32s), len(test.Uint32s))
+		goto Uint64s
+	}
+	for i, v := range test.Uint32s {
+		if v != basic.Uint32s[i] {
+			t.Errorf("Uint32s: got %v at index %d of the copy; want %v", basic.Uint32s[i], i, v)
+		}
+	}
+
+Uint64s:
+	if basic.Uint64 != test.Uint64 {
+		t.Errorf("Uint64: got %v; want %v", basic.Uint64, test.Uint64)
+	}
+	if &(basic.Uint64s) == &(test.Uint64s) {
+		t.Error("Uint64s: address of copy was the same as original; they should be different")
+		goto Float32s
+	}
+	if len(basic.Uint64s) != len(test.Uint64s) {
+		t.Errorf("Uint64s: len was %d; want %d", len(basic.Uint64s), len(test.Uint64s))
+		goto Float32s
+	}
+	for i, v := range test.Uint64s {
+		if v != basic.Uint64s[i] {
+			t.Errorf("Uint64s: got %v at index %d of the copy; want %v", basic.Uint64s[i], i, v)
+		}
+	}
+
+Float32s:
+	if basic.Float32 != test.Float32 {
+		t.Errorf("Float32: got %v; want %v", basic.Float32, test.Float32)
+	}
+	if &(basic.Float32s) == &(test.Float32s) {
+		t.Error("Float32s: address of copy was the same as original; they should be different")
+		goto Float64s
+	}
+	if len(basic.Float32s) != len(test.Float32s) {
+		t.Errorf("Float32s: len was %d; want %d", len(basic.Float32s), len(test.Float32s))
+		goto Float64s
+	}
+	for i, v := range test.Float32s {
+		if v != basic.Float32s[i] {
+			t.Errorf("Float32s: got %v at index %d of the copy; want %v", basic.Float32s[i], i, v)
+		}
+	}
+
+Float64s:
+	if basic.Float64 != test.Float64 {
+		t.Errorf("Float64: got %v; want %v", basic.Float64, test.Float64)
+	}
+	if &(basic.Float64s) == &(test.Float64s) {
+		t.Error("Float64s: address of copy was the same as original; they should be different")
+		goto Complex64s
+	}
+	if len(basic.Float64s) != len(test.Float64s) {
+		t.Errorf("Float64s: len was %d; want %d", len(basic.Float64s), len(test.Float64s))
+		goto Complex64s
+	}
+	for i, v := range test.Float64s {
+		if v != basic.Float64s[i] {
+			t.Errorf("Float64s: got %v at index %d of the copy; want %v", basic.Float64s[i], i, v)
+		}
+	}
+
+Complex64s:
+	if basic.Complex64 != test.Complex64 {
+		t.Errorf("Complex64: got %v; want %v", basic.Complex64, test.Complex64)
+	}
+	if &(basic.Complex64s) == &(test.Complex64s) {
+		t.Error("Complex64s: address of copy was the same as original; they should be different")
+		goto Complex128s
+	}
+	if len(basic.Complex64s) != len(test.Complex64s) {
+		t.Errorf("Complex64s: len was %d; want %d", len(basic.Complex64s), len(test.Complex64s))
+		goto Complex128s
+	}
+	for i, v := range test.Complex64s {
+		if v != basic.Complex64s[i] {
+			t.Errorf("Complex64s: got %v at index %d of the copy; want %v", basic.Complex64s[i], i, v)
+		}
+	}
+
+Complex128s:
+	if basic.Complex128 != test.Complex128 {
+		t.Errorf("Complex128s: got %v; want %v", basic.Complex128s, test.Complex128s)
+	}
+	if &(basic.Complex128s) == &(test.Complex128s) {
+		t.Error("Complex128s: address of copy was the same as original; they should be different")
+		goto Interfaces
+	}
+	if len(basic.Complex128s) != len(test.Complex128s) {
+		t.Errorf("Complex128s: len was %d; want %d", len(basic.Complex128s), len(test.Complex128s))
+		goto Interfaces
+	}
+	for i, v := range test.Complex128s {
+		if v != basic.Complex128s[i] {
+			t.Errorf("Complex128s: got %v at index %d of the copy; want %v", basic.Complex128s[i], i, v)
+		}
+	}
+
+Interfaces:
+	if basic.Interface != test.Interface {
+		t.Errorf("Interface: got %v; want %v", basic.Interface, test.Interface)
+	}
+	if &(basic.Interfaces) == &(test.Interfaces) {
+		t.Error("Interfaces: address of copy was the same as original; they should be different")
+		return
+	}
+	if len(basic.Interfaces) != len(test.Interfaces) {
+		t.Errorf("Interfaces: len was %d; want %d", len(basic.Interfaces), len(test.Interfaces))
+		return
+	}
+	for i, v := range test.Interfaces {
+		if v != basic.Interfaces[i] {
+			t.Errorf("Interfaces: got %v at index %d of the copy; want %v", basic.Interfaces[i], i, v)
+		}
+	}
 }
 
 // not meant to be exhaustive
@@ -693,5 +859,43 @@ B:
 		if v != a.B.Vals[i] {
 			t.Errorf("A.B.Vals[%d]: got %s want %s", i, a.B.Vals[i], v)
 		}
+	}
+}
+
+type Unexported struct {
+	A  string
+	B  int
+	aa string
+	bb int
+	cc []int
+	dd map[string]string
+}
+
+func TestUnexportedFields(t *testing.T) {
+	u := &Unexported{
+		A:  "A",
+		B:  42,
+		aa: "aa",
+		bb: 42,
+		cc: []int{1, 2, 3},
+		dd: map[string]string{"hello": "bonjour"},
+	}
+	cpy := Copy(u)
+	v := cpy.(*Unexported)
+	if v == u {
+		t.Error("expected addresses to be different, they weren't")
+		return
+	}
+	if u.A != v.A {
+		t.Errorf("Unexported.A: got %s want %s", v.A, u.A)
+	}
+	if u.B != v.B {
+		t.Errorf("Unexported.A: got %d want %d", v.B, u.B)
+	}
+	if v.aa != "" {
+		t.Errorf("Unexported.aa: unexported field should not be set, it was set to %s", v.aa)
+	}
+	if v.bb != 0 {
+		t.Errorf("Unexported.bb: unexported field should not be set, it was set to %d", v.bb)
 	}
 }

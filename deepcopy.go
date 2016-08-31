@@ -8,9 +8,7 @@
 // License: MIT, for more details check the included LICENSE file.
 package deepcopy
 
-import (
-	"reflect"
-)
+import "reflect"
 
 // InterfaceToStringSlice takes an interface that is a slice of strings
 // and returns a deep copy of it as a slice of strings.  If the interface
@@ -103,11 +101,14 @@ func copyRecursive(original, cpy reflect.Value) {
 		if !originalValue.IsValid() {
 			return
 		}
-
 		cpy.Set(reflect.New(originalValue.Type()))
 		copyRecursive(originalValue, cpy.Elem())
 
 	case reflect.Interface:
+		// If this is a nil, don't do anything
+		if original.IsNil() {
+			return
+		}
 		// Get the value for the interface, not the pointer.
 		originalValue := original.Elem()
 
@@ -119,6 +120,12 @@ func copyRecursive(original, cpy reflect.Value) {
 	case reflect.Struct:
 		// Go through each field of the struct and copy it.
 		for i := 0; i < original.NumField(); i++ {
+			// The Type's StructField for a given field is checked to see if StructField.PkgPath
+			// is set to determine if the field is exported or not because CanSet() returns false
+			// for settable fields.  I'm not sure why.  -mohae
+			if original.Type().Field(i).PkgPath != "" {
+				continue
+			}
 			copyRecursive(original.Field(i), cpy.Field(i))
 		}
 
