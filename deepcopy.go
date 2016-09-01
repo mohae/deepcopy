@@ -1,66 +1,12 @@
 // deepcopy makes deep copies of things. A standard copy will copy the
-// pointers: deep copy copies the values pointed to.
-//
-// For most use-cases, Copy should be used.  The others functions exist for
-// backwards compatibility reasons.
+// pointers: deep copy copies the values pointed to.  Unexported field
+// values are not copied.
 //
 // Copyright (c)2014-2016, Joel Scoble (github.com/mohae), all rights reserved.
 // License: MIT, for more details check the included LICENSE file.
 package deepcopy
 
 import "reflect"
-
-// InterfaceToStringSlice takes an interface that is a slice of strings
-// and returns a deep copy of it as a slice of strings.  If the interface
-// doesn't contain a []string, a nil will be returned. This exists for
-// backwards compatibility reasons and should not be used; instead, use
-// Copy().
-func InterfaceToStringSlice(v interface{}) []string {
-	if v == nil {
-		return nil
-	}
-	var sl []string
-
-	switch reflect.TypeOf(v).Kind() {
-	case reflect.Slice:
-		s := reflect.ValueOf(v)
-		sLen := s.Len()
-
-		for i := 0; i < sLen; i++ {
-			sl = append(sl, s.Index(i).Interface().(string))
-		}
-
-	default:
-		return nil
-	}
-
-	return sl
-}
-
-// InterfaceToIntSlice takes an interface that is a slice of ints and returns
-// a deep copy of it as a slice of ints.  If the interface doesn't contain a
-// []int, a nil will be returned.  This exists for backwards compatibility
-// reasons and should not be used; instead, use Copy().
-func InterfaceToIntSlice(v interface{}) []int {
-	if v == nil {
-		return nil
-	}
-	var sl []int
-
-	switch reflect.TypeOf(v).Kind() {
-	case reflect.Slice:
-		s := reflect.ValueOf(v)
-		sLen := s.Len()
-
-		for i := 0; i < sLen; i++ {
-			sl = append(sl, s.Index(i).Interface().(int))
-		}
-
-	default:
-		return nil
-	}
-	return sl
-}
 
 // Iface is an alias to Copy; this exists for backwards compatibility reasons.
 func Iface(iface interface{}) interface{} {

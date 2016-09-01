@@ -5,56 +5,6 @@ import (
 	"testing"
 )
 
-var stringSliceOrig = []string{
-	"element1",
-	"element2",
-	"element3",
-}
-
-var intSliceOrig = []int{
-	1,
-	2,
-	3,
-}
-
-func TestStringSlice(t *testing.T) {
-	cpy := InterfaceToStringSlice(nil)
-	if cpy != nil {
-		t.Errorf("got %v; want nil", cpy)
-	}
-	cpy = InterfaceToStringSlice(stringSliceOrig)
-	if len(cpy) != len(stringSliceOrig) {
-		t.Errorf("len of copy was %d; want %d", len(cpy), len(stringSliceOrig))
-	}
-	if &cpy == &stringSliceOrig {
-		t.Error("address of copy was the same as original; they should be different")
-	}
-	for i, v := range stringSliceOrig {
-		if v != cpy[i] {
-			t.Errorf("got %s at index %d of the copy; want %s", cpy[i], i, v)
-		}
-	}
-}
-
-func TestIntSlice(t *testing.T) {
-	cpy := InterfaceToIntSlice(nil)
-	if cpy != nil {
-		t.Errorf("got %v; want nil", cpy)
-	}
-	cpy = InterfaceToIntSlice(intSliceOrig)
-	if len(cpy) != len(intSliceOrig) {
-		t.Errorf("len of copy was %d; want %d", len(cpy), len(intSliceOrig))
-	}
-	if &cpy == &intSliceOrig {
-		t.Error("address of copy was the same as original; they should be different")
-	}
-	for i, v := range intSliceOrig {
-		if v != cpy[i] {
-			t.Errorf("got %d at index %d of the copy; want %d", cpy[i], i, v)
-		}
-	}
-}
-
 // just basic is this working stuff
 func TestSimple(t *testing.T) {
 	Strings := []string{"a", "b", "c"}
