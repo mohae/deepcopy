@@ -14,7 +14,7 @@ func TestSimple(t *testing.T) {
 		t.Errorf("copy []string: expected the interface to contain []string; it didn't")
 		goto TestBools
 	}
-	if &(cpyS) == &(Strings) {
+	if fmt.Sprintf("%p", cpyS) == fmt.Sprintf("%p", Strings) {
 		t.Error("[]string: address of copy was the same as original; they should be different")
 		goto TestBools
 	}
@@ -36,7 +36,7 @@ TestBools:
 		t.Errorf("copy []bool: expected the interface to contain []bool; it didn't")
 		goto TestBytes
 	}
-	if &(cpyB) == &(Bools) {
+	if fmt.Sprintf("%p", cpyB) == fmt.Sprintf("%p", Bools) {
 		t.Error("[]bool: address of copy was the same as original; they should be different")
 		goto TestBytes
 	}
@@ -58,7 +58,7 @@ TestBytes:
 		t.Errorf("copy []byte: expected the interface to contain []byte; it didn't")
 		goto CopyInts
 	}
-	if &(cpyBt) == &(Bytes) {
+	if fmt.Sprintf("%p", cpyBt) == fmt.Sprintf("%p", Bytes) {
 		t.Error("[]byte: address of copy was the same as original; they should be different")
 		goto CopyInts
 	}
@@ -80,7 +80,7 @@ CopyInts:
 		t.Errorf("copy []int: expected the interface to contain []int; it didn't")
 		goto CopyUints
 	}
-	if &(cpyI) == &(Ints) {
+	if fmt.Sprintf("%p", cpyI) == fmt.Sprintf("%p", Ints) {
 		t.Error("[]int: address of copy was the same as original; they should be different")
 		goto CopyUints
 	}
@@ -102,7 +102,7 @@ CopyUints:
 		t.Errorf("copy []uint: expected the interface to contain []uint; it didn't")
 		goto CopyFloat32s
 	}
-	if &(cpyU) == &(Uints) {
+	if fmt.Sprintf("%p", cpyU) == fmt.Sprintf("%p", Uints) {
 		t.Error("[]uint: address of copy was the same as original; they should be different")
 		goto CopyFloat32s
 	}
@@ -124,7 +124,7 @@ CopyFloat32s:
 		t.Errorf("copy []float32: expected the interface to contain []float32; it didn't")
 		goto CopyInterfaces
 	}
-	if &(cpyF) == &(Float32s) {
+	if fmt.Sprintf("%p", cpyF) == fmt.Sprintf("%p", Float32s) {
 		t.Error("[]float32: address of copy was the same as original; they should be different")
 		goto CopyInterfaces
 	}
@@ -146,7 +146,7 @@ CopyInterfaces:
 		t.Errorf("copy []interface{}: expected the interface to contain []interface{}; it didn't")
 		return
 	}
-	if &(cpyIf) == &(Interfaces) {
+	if fmt.Sprintf("%p", cpyIf) == fmt.Sprintf("%p", Interfaces) {
 		t.Error("[]interface{}: address of copy was the same as original; they should be different")
 		return
 	}
@@ -260,7 +260,7 @@ func TestMostTypes(t *testing.T) {
 	if basic.String != test.String {
 		t.Errorf("String: got %v; want %v", basic.String, test.String)
 	}
-	if &(basic.Strings) == &(test.Strings) {
+	if fmt.Sprintf("%p", basic.Strings) == fmt.Sprintf("%p", test.Strings) {
 		t.Error("Strings: address of copy was the same as original; they should be different")
 		goto StringArr
 	}
@@ -275,7 +275,7 @@ func TestMostTypes(t *testing.T) {
 	}
 
 StringArr:
-	if &(basic.StringArr) == &(test.StringArr) {
+	if fmt.Sprintf("%p", &basic.StringArr) == fmt.Sprintf("%p", &test.StringArr) {
 		t.Error("StringArr: address of copy was the same as original; they should be different")
 		goto Bools
 	}
@@ -289,7 +289,7 @@ Bools:
 	if basic.Bool != test.Bool {
 		t.Errorf("Bool: got %v; want %v", basic.Bool, test.Bool)
 	}
-	if &(basic.Bools) == &(test.Bools) {
+	if fmt.Sprintf("%p", basic.Bools) == fmt.Sprintf("%p", test.Bools) {
 		t.Error("Bools: address of copy was the same as original; they should be different")
 		goto Bytes
 	}
@@ -307,7 +307,7 @@ Bytes:
 	if basic.Byte != test.Byte {
 		t.Errorf("Byte: got %v; want %v", basic.Byte, test.Byte)
 	}
-	if &(basic.Bytes) == &(test.Bytes) {
+	if fmt.Sprintf("%p", basic.Bytes) == fmt.Sprintf("%p", test.Bytes) {
 		t.Error("Bytes: address of copy was the same as original; they should be different")
 		goto Ints
 	}
@@ -325,7 +325,7 @@ Ints:
 	if basic.Int != test.Int {
 		t.Errorf("Int: got %v; want %v", basic.Int, test.Int)
 	}
-	if &(basic.Ints) == &(test.Ints) {
+	if fmt.Sprintf("%p", basic.Ints) == fmt.Sprintf("%p", test.Ints) {
 		t.Error("Ints: address of copy was the same as original; they should be different")
 		goto Int8s
 	}
@@ -343,7 +343,7 @@ Int8s:
 	if basic.Int8 != test.Int8 {
 		t.Errorf("Int8: got %v; want %v", basic.Int8, test.Int8)
 	}
-	if &(basic.Int8s) == &(test.Int8s) {
+	if fmt.Sprintf("%p", basic.Int8s) == fmt.Sprintf("%p", test.Int8s) {
 		t.Error("Int8s: address of copy was the same as original; they should be different")
 		goto Int16s
 	}
@@ -361,7 +361,7 @@ Int16s:
 	if basic.Int16 != test.Int16 {
 		t.Errorf("Int16: got %v; want %v", basic.Int16, test.Int16)
 	}
-	if &(basic.Int16s) == &(test.Int16s) {
+	if fmt.Sprintf("%p", basic.Int16s) == fmt.Sprintf("%p", test.Int16s) {
 		t.Error("Int16s: address of copy was the same as original; they should be different")
 		goto Int32s
 	}
@@ -379,7 +379,7 @@ Int32s:
 	if basic.Int32 != test.Int32 {
 		t.Errorf("Int32: got %v; want %v", basic.Int32, test.Int32)
 	}
-	if &(basic.Int32s) == &(test.Int32s) {
+	if fmt.Sprintf("%p", basic.Int32s) == fmt.Sprintf("%p", test.Int32s) {
 		t.Error("Int32s: address of copy was the same as original; they should be different")
 		goto Int64s
 	}
@@ -397,7 +397,7 @@ Int64s:
 	if basic.Int64 != test.Int64 {
 		t.Errorf("Int64: got %v; want %v", basic.Int64, test.Int64)
 	}
-	if &(basic.Int64s) == &(test.Int64s) {
+	if fmt.Sprintf("%p", basic.Int64s) == fmt.Sprintf("%p", test.Int64s) {
 		t.Error("Int64s: address of copy was the same as original; they should be different")
 		goto Uints
 	}
@@ -415,7 +415,7 @@ Uints:
 	if basic.Uint != test.Uint {
 		t.Errorf("Uint: got %v; want %v", basic.Uint, test.Uint)
 	}
-	if &(basic.Uints) == &(test.Uints) {
+	if fmt.Sprintf("%p", basic.Uints) == fmt.Sprintf("%p", test.Uints) {
 		t.Error("Uints: address of copy was the same as original; they should be different")
 		goto Uint8s
 	}
@@ -433,7 +433,7 @@ Uint8s:
 	if basic.Uint8 != test.Uint8 {
 		t.Errorf("Uint8: got %v; want %v", basic.Uint8, test.Uint8)
 	}
-	if &(basic.Uint8s) == &(test.Uint8s) {
+	if fmt.Sprintf("%p", basic.Uint8s) == fmt.Sprintf("%p", test.Uint8s) {
 		t.Error("Uint8s: address of copy was the same as original; they should be different")
 		goto Uint16s
 	}
@@ -451,7 +451,7 @@ Uint16s:
 	if basic.Uint16 != test.Uint16 {
 		t.Errorf("Uint16: got %v; want %v", basic.Uint16, test.Uint16)
 	}
-	if &(basic.Uint16s) == &(test.Uint16s) {
+	if fmt.Sprintf("%p", basic.Uint16s) == fmt.Sprintf("%p", test.Uint16s) {
 		t.Error("Uint16s: address of copy was the same as original; they should be different")
 		goto Uint32s
 	}
@@ -469,7 +469,7 @@ Uint32s:
 	if basic.Uint32 != test.Uint32 {
 		t.Errorf("Uint32: got %v; want %v", basic.Uint32, test.Uint32)
 	}
-	if &(basic.Uint32s) == &(test.Uint32s) {
+	if fmt.Sprintf("%p", basic.Uint32s) == fmt.Sprintf("%p", test.Uint32s) {
 		t.Error("Uint32s: address of copy was the same as original; they should be different")
 		goto Uint64s
 	}
@@ -487,7 +487,7 @@ Uint64s:
 	if basic.Uint64 != test.Uint64 {
 		t.Errorf("Uint64: got %v; want %v", basic.Uint64, test.Uint64)
 	}
-	if &(basic.Uint64s) == &(test.Uint64s) {
+	if fmt.Sprintf("%p", basic.Uint64s) == fmt.Sprintf("%p", test.Uint64s) {
 		t.Error("Uint64s: address of copy was the same as original; they should be different")
 		goto Float32s
 	}
@@ -505,7 +505,7 @@ Float32s:
 	if basic.Float32 != test.Float32 {
 		t.Errorf("Float32: got %v; want %v", basic.Float32, test.Float32)
 	}
-	if &(basic.Float32s) == &(test.Float32s) {
+	if fmt.Sprintf("%p", basic.Float32s) == fmt.Sprintf("%p", test.Float32s) {
 		t.Error("Float32s: address of copy was the same as original; they should be different")
 		goto Float64s
 	}
@@ -523,7 +523,7 @@ Float64s:
 	if basic.Float64 != test.Float64 {
 		t.Errorf("Float64: got %v; want %v", basic.Float64, test.Float64)
 	}
-	if &(basic.Float64s) == &(test.Float64s) {
+	if fmt.Sprintf("%p", basic.Float64s) == fmt.Sprintf("%p", test.Float64s) {
 		t.Error("Float64s: address of copy was the same as original; they should be different")
 		goto Complex64s
 	}
@@ -541,7 +541,7 @@ Complex64s:
 	if basic.Complex64 != test.Complex64 {
 		t.Errorf("Complex64: got %v; want %v", basic.Complex64, test.Complex64)
 	}
-	if &(basic.Complex64s) == &(test.Complex64s) {
+	if fmt.Sprintf("%p", basic.Complex64s) == fmt.Sprintf("%p", test.Complex64s) {
 		t.Error("Complex64s: address of copy was the same as original; they should be different")
 		goto Complex128s
 	}
@@ -577,7 +577,7 @@ Interfaces:
 	if basic.Interface != test.Interface {
 		t.Errorf("Interface: got %v; want %v", basic.Interface, test.Interface)
 	}
-	if &(basic.Interfaces) == &(test.Interfaces) {
+	if fmt.Sprintf("%p", basic.Interfaces) == fmt.Sprintf("%p", test.Interfaces) {
 		t.Error("Interfaces: address of copy was the same as original; they should be different")
 		return
 	}
@@ -601,7 +601,7 @@ func TestComplexSlices(t *testing.T) {
 		t.Errorf("copy of [][][]int: expected the interface to contain a [][][]int; it didn't")
 		goto sliceMap
 	}
-	if &cpyI == &orig3Int {
+	if fmt.Sprintf("%p", cpyI) == fmt.Sprintf("%p", orig3Int) {
 		t.Error("[][][]int: address of copy was the same as original; they should be different")
 	}
 	if len(orig3Int) != len(cpyI) {
@@ -635,7 +635,7 @@ sliceMap:
 		t.Errorf("copy of []map[int]string: expected the interface to contain a []map[int]string; it didn't")
 		goto done
 	}
-	if &cpyM == &slMap {
+	if fmt.Sprintf("%p", cpyM) == fmt.Sprintf("%p", slMap) {
 		t.Error("[]map[int]string: address of copy was the same as original; they should be different")
 	}
 	if len(slMap) != len(cpyM) {
@@ -847,5 +847,11 @@ func TestUnexportedFields(t *testing.T) {
 	}
 	if v.bb != 0 {
 		t.Errorf("Unexported.bb: unexported field should not be set, it was set to %d", v.bb)
+	}
+	if v.cc != nil {
+		t.Errorf("Unexported.cc: unexported field should not be set, it was set to %#v", v.cc)
+	}
+	if v.dd != nil {
+		t.Errorf("Unexported.dd: unexported field should not be set, it was set to %#v", v.dd)
 	}
 }
