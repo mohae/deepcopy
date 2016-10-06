@@ -3,6 +3,7 @@ package deepcopy
 import (
 	"fmt"
 	"testing"
+	"time"
 )
 
 // just basic is this working stuff
@@ -670,6 +671,7 @@ type A struct {
 	MapB   map[string]*B
 	SliceB []*B
 	B
+	T time.Time
 }
 
 type B struct {
@@ -689,6 +691,7 @@ var AStruct = A{
 		&B{Vals: []string{"Ciao", "Aloha"}},
 	},
 	B: B{Vals: []string{"42"}},
+	T: time.Now(),
 }
 
 func TestStructA(t *testing.T) {
@@ -795,20 +798,28 @@ ASliceB:
 B:
 	if fmt.Sprintf("%p", &AStruct.B) == fmt.Sprintf("%p", &a.B) {
 		t.Error("A.B: expected them to have different addresses, they didn't")
-		return
+		goto T
 	}
 	if fmt.Sprintf("%p", AStruct.B.Vals) == fmt.Sprintf("%p", a.B.Vals) {
 		t.Error("A.B.Vals: expected them to have different addresses, they didn't")
-		return
+		goto T
 	}
 	if len(AStruct.B.Vals) != len(a.B.Vals) {
 		t.Error("A.B.Vals: expected their lengths to be the same, they weren't")
-		return
+		goto T
 	}
 	for i, v := range AStruct.B.Vals {
 		if v != a.B.Vals[i] {
 			t.Errorf("A.B.Vals[%d]: got %s want %s", i, a.B.Vals[i], v)
 		}
+	}
+T:
+	if fmt.Sprintf("%p", &AStruct.T) == fmt.Sprintf("%p", &a.T) {
+		t.Error("A.T: expected them to have different addresses, they didn't")
+		return
+	}
+	if AStruct.T != a.T {
+		t.Errorf("A.T: got %v, want %v", a.T, AStruct.T)
 	}
 }
 
