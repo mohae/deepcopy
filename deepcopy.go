@@ -76,6 +76,9 @@ func copyRecursive(original, cpy reflect.Value) {
 		}
 
 	case reflect.Slice:
+		if original.IsNil() {
+			return
+		}
 		// Make a new slice and copy each element.
 		cpy.Set(reflect.MakeSlice(original.Type(), original.Len(), original.Cap()))
 		for i := 0; i < original.Len(); i++ {
@@ -83,6 +86,9 @@ func copyRecursive(original, cpy reflect.Value) {
 		}
 
 	case reflect.Map:
+		if original.IsNil() {
+			return
+		}
 		cpy.Set(reflect.MakeMap(original.Type()))
 		for _, key := range original.MapKeys() {
 			originalValue := original.MapIndex(key)
