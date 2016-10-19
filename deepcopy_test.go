@@ -667,7 +667,6 @@ type A struct {
 	String string
 	UintSl []uint
 	NilSl  []string
-	NilMap map[string]string
 	Map    map[string]int
 	MapB   map[string]*B
 	SliceB []*B
@@ -718,14 +717,6 @@ func TestStructA(t *testing.T) {
 	}
 	if len(a.UintSl) != len(AStruct.UintSl) {
 		t.Errorf("A.UintSl: got len of %d, want %d", len(a.UintSl), len(AStruct.UintSl))
-		goto AMap
-	}
-	if a.NilSl != nil {
-		t.Errorf("A.NilSl: nil slice expected")
-		goto AMap
-	}
-	if a.NilMap != nil {
-		t.Errorf("A.NilSl: nil map expected")
 		goto AMap
 	}
 	for i, v := range AStruct.UintSl {
@@ -873,5 +864,50 @@ func TestUnexportedFields(t *testing.T) {
 	}
 	if v.dd != nil {
 		t.Errorf("Unexported.dd: unexported field should not be set, it was set to %#v", v.dd)
+	}
+}
+
+// Note: this test will fail until https://github.com/golang/go/issues/15716 is
+// fixed and the version it is part of gets released.
+type T struct {
+	time.Time
+}
+
+func TestTimeCopy(t *testing.T) {
+	tests := []struct {
+		Y    int
+		M    time.Month
+		D    int
+		h    int
+		m    int
+		s    int
+		nsec int
+		TZ   string
+	}{
+		{2016, time.July, 4, 23, 11, 33, 3000, "America/New_York"},
+		{2015, time.October, 31, 9, 44, 23, 45935, "UTC"},
+		{2014, time.May, 5, 22, 01, 50, 219300, "Europe/Prague"},
+	}
+
+	for i, test := range tests {
+		l, err := time.LoadLocation(test.TZ)
+		if err != nil {
+			t.Errorf("%d: unexpected error: %s", i, err)
+			continue
+		}
+		var x T
+		x.Time = time.Date(test.Y, test.M, test.D, test.h, test.m, test.s, test.nsec, l)
+		c := Copy(x).(T)
+		if fmt.Sprintf("%p", &c) == fmt.Sprintf("%p", &x) {
+			t.Errorf("%d: expected the copy to have a different address than the original value; they were the same: %p %p", i, &c, &x)
+			continue
+		}
+		if x.UnixNano() != c.UnixNano() {
+			t.Errorf("%d: nanotime: got %v; want %v", i, c.UnixNano(), x.UnixNano())
+			continue
+		}
+		if x.Location() != c.Location() {
+			t.Errorf("%d: location: got %q; want %q", i, c.Location(), x.Location())
+		}
 	}
 }
