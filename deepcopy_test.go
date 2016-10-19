@@ -667,6 +667,7 @@ type A struct {
 	String string
 	UintSl []uint
 	NilSl  []string
+	NilMap map[string]string
 	Map    map[string]int
 	MapB   map[string]*B
 	SliceB []*B
@@ -717,6 +718,14 @@ func TestStructA(t *testing.T) {
 	}
 	if len(a.UintSl) != len(AStruct.UintSl) {
 		t.Errorf("A.UintSl: got len of %d, want %d", len(a.UintSl), len(AStruct.UintSl))
+		goto AMap
+	}
+	if a.NilSl != nil {
+		t.Errorf("A.NilSl: nil slice expected")
+		goto AMap
+	}
+	if a.NilMap != nil {
+		t.Errorf("A.NilSl: nil map expected")
 		goto AMap
 	}
 	for i, v := range AStruct.UintSl {
