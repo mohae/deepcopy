@@ -67,16 +67,7 @@ func copyRecursive(original, cpy reflect.Value) {
 	case reflect.Struct:
 		t, ok := original.Interface().(time.Time)
 		if ok {
-			b, err := t.MarshalBinary()
-			if err != nil {
-				panic(err)
-			}
-			tcpy := time.Time{}
-			tcpy.UnmarshalBinary(b)
-			if err != nil {
-				panic(err)
-			}
-			cpy.Set(reflect.ValueOf(tcpy))
+			cpy.Set(reflect.ValueOf(t))
 			return
 		}
 		// Go through each field of the struct and copy it.
