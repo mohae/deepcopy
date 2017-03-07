@@ -2,26 +2,23 @@ package deepcopy
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 	"time"
+	"unsafe"
 )
 
 // just basic is this working stuff
 func TestSimple(t *testing.T) {
 	Strings := []string{"a", "b", "c"}
-	cpy := Copy(Strings)
-	cpyS, ok := cpy.([]string)
-	if !ok {
-		t.Errorf("copy []string: expected the interface to contain []string; it didn't")
-		goto TestBools
-	}
-	if fmt.Sprintf("%p", cpyS) == fmt.Sprintf("%p", Strings) {
-		t.Error("[]string: address of copy was the same as original; they should be different")
-		goto TestBools
+	cpyS := Copy(Strings).([]string)
+	if (*reflect.SliceHeader)(unsafe.Pointer(&Strings)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpyS)).Data {
+		t.Error("[]string: expected SliceHeader data pointers to point to different locations, they didn't")
+		goto CopyBools
 	}
 	if len(cpyS) != len(Strings) {
 		t.Errorf("[]string: len was %d; want %d", len(cpyS), len(Strings))
-		goto TestBools
+		goto CopyBools
 	}
 	for i, v := range Strings {
 		if v != cpyS[i] {
@@ -29,21 +26,16 @@ func TestSimple(t *testing.T) {
 		}
 	}
 
-TestBools:
+CopyBools:
 	Bools := []bool{true, true, false, false}
-	cpy = Copy(Bools)
-	cpyB, ok := cpy.([]bool)
-	if !ok {
-		t.Errorf("copy []bool: expected the interface to contain []bool; it didn't")
-		goto TestBytes
-	}
-	if fmt.Sprintf("%p", cpyB) == fmt.Sprintf("%p", Bools) {
-		t.Error("[]bool: address of copy was the same as original; they should be different")
-		goto TestBytes
+	cpyB := Copy(Bools).([]bool)
+	if (*reflect.SliceHeader)(unsafe.Pointer(&Strings)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpyB)).Data {
+		t.Error("[]bool: expected SliceHeader data pointers to point to different locations, they didn't")
+		goto CopyBytes
 	}
 	if len(cpyB) != len(Bools) {
 		t.Errorf("[]bool: len was %d; want %d", len(cpyB), len(Bools))
-		goto TestBytes
+		goto CopyBytes
 	}
 	for i, v := range Bools {
 		if v != cpyB[i] {
@@ -51,16 +43,11 @@ TestBools:
 		}
 	}
 
-TestBytes:
+CopyBytes:
 	Bytes := []byte("hello")
-	cpy = Copy(Bytes)
-	cpyBt, ok := cpy.([]byte)
-	if !ok {
-		t.Errorf("copy []byte: expected the interface to contain []byte; it didn't")
-		goto CopyInts
-	}
-	if fmt.Sprintf("%p", cpyBt) == fmt.Sprintf("%p", Bytes) {
-		t.Error("[]byte: address of copy was the same as original; they should be different")
+	cpyBt := Copy(Bytes).([]byte)
+	if (*reflect.SliceHeader)(unsafe.Pointer(&Strings)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpyBt)).Data {
+		t.Error("[]byte: expected SliceHeader data pointers to point to different locations, they didn't")
 		goto CopyInts
 	}
 	if len(cpyBt) != len(Bytes) {
@@ -75,14 +62,9 @@ TestBytes:
 
 CopyInts:
 	Ints := []int{42}
-	cpy = Copy(Ints)
-	cpyI, ok := cpy.([]int)
-	if !ok {
-		t.Errorf("copy []int: expected the interface to contain []int; it didn't")
-		goto CopyUints
-	}
-	if fmt.Sprintf("%p", cpyI) == fmt.Sprintf("%p", Ints) {
-		t.Error("[]int: address of copy was the same as original; they should be different")
+	cpyI := Copy(Ints).([]int)
+	if (*reflect.SliceHeader)(unsafe.Pointer(&Strings)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpyI)).Data {
+		t.Error("[]int: expected SliceHeader data pointers to point to different locations, they didn't")
 		goto CopyUints
 	}
 	if len(cpyI) != len(Ints) {
@@ -97,14 +79,9 @@ CopyInts:
 
 CopyUints:
 	Uints := []uint{1, 2, 3, 4, 5}
-	cpy = Copy(Uints)
-	cpyU, ok := cpy.([]uint)
-	if !ok {
-		t.Errorf("copy []uint: expected the interface to contain []uint; it didn't")
-		goto CopyFloat32s
-	}
-	if fmt.Sprintf("%p", cpyU) == fmt.Sprintf("%p", Uints) {
-		t.Error("[]uint: address of copy was the same as original; they should be different")
+	cpyU := Copy(Uints).([]uint)
+	if (*reflect.SliceHeader)(unsafe.Pointer(&Strings)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpyU)).Data {
+		t.Error("[]: expected SliceHeader data pointers to point to different locations, they didn't")
 		goto CopyFloat32s
 	}
 	if len(cpyU) != len(Uints) {
@@ -119,14 +96,9 @@ CopyUints:
 
 CopyFloat32s:
 	Float32s := []float32{3.14}
-	cpy = Copy(Float32s)
-	cpyF, ok := cpy.([]float32)
-	if !ok {
-		t.Errorf("copy []float32: expected the interface to contain []float32; it didn't")
-		goto CopyInterfaces
-	}
-	if fmt.Sprintf("%p", cpyF) == fmt.Sprintf("%p", Float32s) {
-		t.Error("[]float32: address of copy was the same as original; they should be different")
+	cpyF := Copy(Float32s).([]float32)
+	if (*reflect.SliceHeader)(unsafe.Pointer(&Strings)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpyF)).Data {
+		t.Error("[]float32: expected SliceHeader data pointers to point to different locations, they didn't")
 		goto CopyInterfaces
 	}
 	if len(cpyF) != len(Float32s) {
@@ -141,14 +113,9 @@ CopyFloat32s:
 
 CopyInterfaces:
 	Interfaces := []interface{}{"a", 42, true, 4.32}
-	cpy = Copy(Interfaces)
-	cpyIf, ok := cpy.([]interface{})
-	if !ok {
-		t.Errorf("copy []interface{}: expected the interface to contain []interface{}; it didn't")
-		return
-	}
-	if fmt.Sprintf("%p", cpyIf) == fmt.Sprintf("%p", Interfaces) {
-		t.Error("[]interface{}: address of copy was the same as original; they should be different")
+	cpyIf := Copy(Interfaces).([]interface{})
+	if (*reflect.SliceHeader)(unsafe.Pointer(&Strings)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpyIf)).Data {
+		t.Error("[]interfaces: expected SliceHeader data pointers to point to different locations, they didn't")
 		return
 	}
 	if len(cpyIf) != len(Interfaces) {
