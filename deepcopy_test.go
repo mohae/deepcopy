@@ -211,351 +211,365 @@ func TestMostTypes(t *testing.T) {
 		Interfaces:  []interface{}{42, true, "pan-galactic"},
 	}
 
-	cpy := Copy(test)
-	basic, ok := cpy.(Basics)
-	if !ok {
-		t.Errorf("copy of Basics: expected the interface to contain a Basics struct; it didn't")
-		return
-	}
+	cpy := Copy(test).(Basics)
 
 	// see if they point to the same location
-	if fmt.Sprintf("%p", &basic) == fmt.Sprintf("%p", &test) {
+	if fmt.Sprintf("%p", &cpy) == fmt.Sprintf("%p", &test) {
 		t.Error("address of copy was the same as original; they should be different")
 		return
 	}
 
 	// Go through each field and check to see it got copied properly
-	if basic.String != test.String {
-		t.Errorf("String: got %v; want %v", basic.String, test.String)
+	if cpy.String != test.String {
+		t.Errorf("String: got %v; want %v", cpy.String, test.String)
 	}
-	if fmt.Sprintf("%p", basic.Strings) == fmt.Sprintf("%p", test.Strings) {
+
+	if (*reflect.SliceHeader)(unsafe.Pointer(&test.Strings)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.Strings)).Data {
 		t.Error("Strings: address of copy was the same as original; they should be different")
 		goto StringArr
 	}
-	if len(basic.Strings) != len(test.Strings) {
-		t.Errorf("Strings: len was %d; want %d", len(basic.Strings), len(test.Strings))
+
+	if len(cpy.Strings) != len(test.Strings) {
+		t.Errorf("Strings: len was %d; want %d", len(cpy.Strings), len(test.Strings))
 		goto StringArr
 	}
 	for i, v := range test.Strings {
-		if v != basic.Strings[i] {
-			t.Errorf("Strings: got %v at index %d of the copy; want %v", basic.Strings[i], i, v)
+		if v != cpy.Strings[i] {
+			t.Errorf("Strings: got %v at index %d of the copy; want %v", cpy.Strings[i], i, v)
 		}
 	}
 
 StringArr:
-	if fmt.Sprintf("%p", &basic.StringArr) == fmt.Sprintf("%p", &test.StringArr) {
+	if unsafe.Pointer(&test.StringArr) == unsafe.Pointer(&cpy.StringArr) {
 		t.Error("StringArr: address of copy was the same as original; they should be different")
 		goto Bools
 	}
 	for i, v := range test.StringArr {
-		if v != basic.StringArr[i] {
-			t.Errorf("StringArr: got %v at index %d of the copy; want %v", basic.StringArr[i], i, v)
+		if v != cpy.StringArr[i] {
+			t.Errorf("StringArr: got %v at index %d of the copy; want %v", cpy.StringArr[i], i, v)
 		}
 	}
 
 Bools:
-	if basic.Bool != test.Bool {
-		t.Errorf("Bool: got %v; want %v", basic.Bool, test.Bool)
+	if cpy.Bool != test.Bool {
+		t.Errorf("Bool: got %v; want %v", cpy.Bool, test.Bool)
 	}
-	if fmt.Sprintf("%p", basic.Bools) == fmt.Sprintf("%p", test.Bools) {
+
+	if (*reflect.SliceHeader)(unsafe.Pointer(&test.Bools)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.Bools)).Data {
 		t.Error("Bools: address of copy was the same as original; they should be different")
 		goto Bytes
 	}
-	if len(basic.Bools) != len(test.Bools) {
-		t.Errorf("Bools: len was %d; want %d", len(basic.Bools), len(test.Bools))
+	if len(cpy.Bools) != len(test.Bools) {
+		t.Errorf("Bools: len was %d; want %d", len(cpy.Bools), len(test.Bools))
 		goto Bytes
 	}
 	for i, v := range test.Bools {
-		if v != basic.Bools[i] {
-			t.Errorf("Bools: got %v at index %d of the copy; want %v", basic.Bools[i], i, v)
+		if v != cpy.Bools[i] {
+			t.Errorf("Bools: got %v at index %d of the copy; want %v", cpy.Bools[i], i, v)
 		}
 	}
 
 Bytes:
-	if basic.Byte != test.Byte {
-		t.Errorf("Byte: got %v; want %v", basic.Byte, test.Byte)
+	if cpy.Byte != test.Byte {
+		t.Errorf("Byte: got %v; want %v", cpy.Byte, test.Byte)
 	}
-	if fmt.Sprintf("%p", basic.Bytes) == fmt.Sprintf("%p", test.Bytes) {
+
+	if (*reflect.SliceHeader)(unsafe.Pointer(&test.Bytes)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.Bytes)).Data {
 		t.Error("Bytes: address of copy was the same as original; they should be different")
 		goto Ints
 	}
-	if len(basic.Bytes) != len(test.Bytes) {
-		t.Errorf("Bytes: len was %d; want %d", len(basic.Bytes), len(test.Bytes))
+	if len(cpy.Bytes) != len(test.Bytes) {
+		t.Errorf("Bytes: len was %d; want %d", len(cpy.Bytes), len(test.Bytes))
 		goto Ints
 	}
 	for i, v := range test.Bytes {
-		if v != basic.Bytes[i] {
-			t.Errorf("Bytes: got %v at index %d of the copy; want %v", basic.Bytes[i], i, v)
+		if v != cpy.Bytes[i] {
+			t.Errorf("Bytes: got %v at index %d of the copy; want %v", cpy.Bytes[i], i, v)
 		}
 	}
 
 Ints:
-	if basic.Int != test.Int {
-		t.Errorf("Int: got %v; want %v", basic.Int, test.Int)
+	if cpy.Int != test.Int {
+		t.Errorf("Int: got %v; want %v", cpy.Int, test.Int)
 	}
-	if fmt.Sprintf("%p", basic.Ints) == fmt.Sprintf("%p", test.Ints) {
+
+	if (*reflect.SliceHeader)(unsafe.Pointer(&test.Ints)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.Ints)).Data {
 		t.Error("Ints: address of copy was the same as original; they should be different")
 		goto Int8s
 	}
-	if len(basic.Ints) != len(test.Ints) {
-		t.Errorf("Ints: len was %d; want %d", len(basic.Ints), len(test.Ints))
+	if len(cpy.Ints) != len(test.Ints) {
+		t.Errorf("Ints: len was %d; want %d", len(cpy.Ints), len(test.Ints))
 		goto Int8s
 	}
 	for i, v := range test.Ints {
-		if v != basic.Ints[i] {
-			t.Errorf("Ints: got %v at index %d of the copy; want %v", basic.Ints[i], i, v)
+		if v != cpy.Ints[i] {
+			t.Errorf("Ints: got %v at index %d of the copy; want %v", cpy.Ints[i], i, v)
 		}
 	}
 
 Int8s:
-	if basic.Int8 != test.Int8 {
-		t.Errorf("Int8: got %v; want %v", basic.Int8, test.Int8)
+	if cpy.Int8 != test.Int8 {
+		t.Errorf("Int8: got %v; want %v", cpy.Int8, test.Int8)
 	}
-	if fmt.Sprintf("%p", basic.Int8s) == fmt.Sprintf("%p", test.Int8s) {
+
+	if (*reflect.SliceHeader)(unsafe.Pointer(&test.Int8s)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.Int8s)).Data {
 		t.Error("Int8s: address of copy was the same as original; they should be different")
 		goto Int16s
 	}
-	if len(basic.Int8s) != len(test.Int8s) {
-		t.Errorf("Int8s: len was %d; want %d", len(basic.Int8s), len(test.Int8s))
+	if len(cpy.Int8s) != len(test.Int8s) {
+		t.Errorf("Int8s: len was %d; want %d", len(cpy.Int8s), len(test.Int8s))
 		goto Int16s
 	}
 	for i, v := range test.Int8s {
-		if v != basic.Int8s[i] {
-			t.Errorf("Int8s: got %v at index %d of the copy; want %v", basic.Int8s[i], i, v)
+		if v != cpy.Int8s[i] {
+			t.Errorf("Int8s: got %v at index %d of the copy; want %v", cpy.Int8s[i], i, v)
 		}
 	}
 
 Int16s:
-	if basic.Int16 != test.Int16 {
-		t.Errorf("Int16: got %v; want %v", basic.Int16, test.Int16)
+	if cpy.Int16 != test.Int16 {
+		t.Errorf("Int16: got %v; want %v", cpy.Int16, test.Int16)
 	}
-	if fmt.Sprintf("%p", basic.Int16s) == fmt.Sprintf("%p", test.Int16s) {
+
+	if (*reflect.SliceHeader)(unsafe.Pointer(&test.Int16s)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.Int16s)).Data {
 		t.Error("Int16s: address of copy was the same as original; they should be different")
 		goto Int32s
 	}
-	if len(basic.Int16s) != len(test.Int16s) {
-		t.Errorf("Int16s: len was %d; want %d", len(basic.Int16s), len(test.Int16s))
+	if len(cpy.Int16s) != len(test.Int16s) {
+		t.Errorf("Int16s: len was %d; want %d", len(cpy.Int16s), len(test.Int16s))
 		goto Int32s
 	}
 	for i, v := range test.Int16s {
-		if v != basic.Int16s[i] {
-			t.Errorf("Int16s: got %v at index %d of the copy; want %v", basic.Int16s[i], i, v)
+		if v != cpy.Int16s[i] {
+			t.Errorf("Int16s: got %v at index %d of the copy; want %v", cpy.Int16s[i], i, v)
 		}
 	}
 
 Int32s:
-	if basic.Int32 != test.Int32 {
-		t.Errorf("Int32: got %v; want %v", basic.Int32, test.Int32)
+	if cpy.Int32 != test.Int32 {
+		t.Errorf("Int32: got %v; want %v", cpy.Int32, test.Int32)
 	}
-	if fmt.Sprintf("%p", basic.Int32s) == fmt.Sprintf("%p", test.Int32s) {
+
+	if (*reflect.SliceHeader)(unsafe.Pointer(&test.Int32s)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.Int32s)).Data {
 		t.Error("Int32s: address of copy was the same as original; they should be different")
 		goto Int64s
 	}
-	if len(basic.Int32s) != len(test.Int32s) {
-		t.Errorf("Int32s: len was %d; want %d", len(basic.Int32s), len(test.Int32s))
+	if len(cpy.Int32s) != len(test.Int32s) {
+		t.Errorf("Int32s: len was %d; want %d", len(cpy.Int32s), len(test.Int32s))
 		goto Int64s
 	}
 	for i, v := range test.Int32s {
-		if v != basic.Int32s[i] {
-			t.Errorf("Int32s: got %v at index %d of the copy; want %v", basic.Int32s[i], i, v)
+		if v != cpy.Int32s[i] {
+			t.Errorf("Int32s: got %v at index %d of the copy; want %v", cpy.Int32s[i], i, v)
 		}
 	}
 
 Int64s:
-	if basic.Int64 != test.Int64 {
-		t.Errorf("Int64: got %v; want %v", basic.Int64, test.Int64)
+	if cpy.Int64 != test.Int64 {
+		t.Errorf("Int64: got %v; want %v", cpy.Int64, test.Int64)
 	}
-	if fmt.Sprintf("%p", basic.Int64s) == fmt.Sprintf("%p", test.Int64s) {
+
+	if (*reflect.SliceHeader)(unsafe.Pointer(&test.Int64s)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.Int64s)).Data {
 		t.Error("Int64s: address of copy was the same as original; they should be different")
 		goto Uints
 	}
-	if len(basic.Int64s) != len(test.Int64s) {
-		t.Errorf("Int64s: len was %d; want %d", len(basic.Int64s), len(test.Int64s))
+	if len(cpy.Int64s) != len(test.Int64s) {
+		t.Errorf("Int64s: len was %d; want %d", len(cpy.Int64s), len(test.Int64s))
 		goto Uints
 	}
 	for i, v := range test.Int64s {
-		if v != basic.Int64s[i] {
-			t.Errorf("Int64s: got %v at index %d of the copy; want %v", basic.Int64s[i], i, v)
+		if v != cpy.Int64s[i] {
+			t.Errorf("Int64s: got %v at index %d of the copy; want %v", cpy.Int64s[i], i, v)
 		}
 	}
 
 Uints:
-	if basic.Uint != test.Uint {
-		t.Errorf("Uint: got %v; want %v", basic.Uint, test.Uint)
+	if cpy.Uint != test.Uint {
+		t.Errorf("Uint: got %v; want %v", cpy.Uint, test.Uint)
 	}
-	if fmt.Sprintf("%p", basic.Uints) == fmt.Sprintf("%p", test.Uints) {
+
+	if (*reflect.SliceHeader)(unsafe.Pointer(&test.Uints)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.Uints)).Data {
 		t.Error("Uints: address of copy was the same as original; they should be different")
 		goto Uint8s
 	}
-	if len(basic.Uints) != len(test.Uints) {
-		t.Errorf("Uints: len was %d; want %d", len(basic.Uints), len(test.Uints))
+	if len(cpy.Uints) != len(test.Uints) {
+		t.Errorf("Uints: len was %d; want %d", len(cpy.Uints), len(test.Uints))
 		goto Uint8s
 	}
 	for i, v := range test.Uints {
-		if v != basic.Uints[i] {
-			t.Errorf("Uints: got %v at index %d of the copy; want %v", basic.Uints[i], i, v)
+		if v != cpy.Uints[i] {
+			t.Errorf("Uints: got %v at index %d of the copy; want %v", cpy.Uints[i], i, v)
 		}
 	}
 
 Uint8s:
-	if basic.Uint8 != test.Uint8 {
-		t.Errorf("Uint8: got %v; want %v", basic.Uint8, test.Uint8)
+	if cpy.Uint8 != test.Uint8 {
+		t.Errorf("Uint8: got %v; want %v", cpy.Uint8, test.Uint8)
 	}
-	if fmt.Sprintf("%p", basic.Uint8s) == fmt.Sprintf("%p", test.Uint8s) {
+
+	if (*reflect.SliceHeader)(unsafe.Pointer(&test.Uint8s)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.Uint8s)).Data {
 		t.Error("Uint8s: address of copy was the same as original; they should be different")
 		goto Uint16s
 	}
-	if len(basic.Uint8s) != len(test.Uint8s) {
-		t.Errorf("Uint8s: len was %d; want %d", len(basic.Uint8s), len(test.Uint8s))
+	if len(cpy.Uint8s) != len(test.Uint8s) {
+		t.Errorf("Uint8s: len was %d; want %d", len(cpy.Uint8s), len(test.Uint8s))
 		goto Uint16s
 	}
 	for i, v := range test.Uint8s {
-		if v != basic.Uint8s[i] {
-			t.Errorf("Uint8s: got %v at index %d of the copy; want %v", basic.Uint8s[i], i, v)
+		if v != cpy.Uint8s[i] {
+			t.Errorf("Uint8s: got %v at index %d of the copy; want %v", cpy.Uint8s[i], i, v)
 		}
 	}
 
 Uint16s:
-	if basic.Uint16 != test.Uint16 {
-		t.Errorf("Uint16: got %v; want %v", basic.Uint16, test.Uint16)
+	if cpy.Uint16 != test.Uint16 {
+		t.Errorf("Uint16: got %v; want %v", cpy.Uint16, test.Uint16)
 	}
-	if fmt.Sprintf("%p", basic.Uint16s) == fmt.Sprintf("%p", test.Uint16s) {
+
+	if (*reflect.SliceHeader)(unsafe.Pointer(&test.Uint16s)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.Uint16s)).Data {
 		t.Error("Uint16s: address of copy was the same as original; they should be different")
 		goto Uint32s
 	}
-	if len(basic.Uint16s) != len(test.Uint16s) {
-		t.Errorf("Uint16s: len was %d; want %d", len(basic.Uint16s), len(test.Uint16s))
+	if len(cpy.Uint16s) != len(test.Uint16s) {
+		t.Errorf("Uint16s: len was %d; want %d", len(cpy.Uint16s), len(test.Uint16s))
 		goto Uint32s
 	}
 	for i, v := range test.Uint16s {
-		if v != basic.Uint16s[i] {
-			t.Errorf("Uint16s: got %v at index %d of the copy; want %v", basic.Uint16s[i], i, v)
+		if v != cpy.Uint16s[i] {
+			t.Errorf("Uint16s: got %v at index %d of the copy; want %v", cpy.Uint16s[i], i, v)
 		}
 	}
 
 Uint32s:
-	if basic.Uint32 != test.Uint32 {
-		t.Errorf("Uint32: got %v; want %v", basic.Uint32, test.Uint32)
+	if cpy.Uint32 != test.Uint32 {
+		t.Errorf("Uint32: got %v; want %v", cpy.Uint32, test.Uint32)
 	}
-	if fmt.Sprintf("%p", basic.Uint32s) == fmt.Sprintf("%p", test.Uint32s) {
+
+	if (*reflect.SliceHeader)(unsafe.Pointer(&test.Uint32s)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.Uint32s)).Data {
 		t.Error("Uint32s: address of copy was the same as original; they should be different")
 		goto Uint64s
 	}
-	if len(basic.Uint32s) != len(test.Uint32s) {
-		t.Errorf("Uint32s: len was %d; want %d", len(basic.Uint32s), len(test.Uint32s))
+	if len(cpy.Uint32s) != len(test.Uint32s) {
+		t.Errorf("Uint32s: len was %d; want %d", len(cpy.Uint32s), len(test.Uint32s))
 		goto Uint64s
 	}
 	for i, v := range test.Uint32s {
-		if v != basic.Uint32s[i] {
-			t.Errorf("Uint32s: got %v at index %d of the copy; want %v", basic.Uint32s[i], i, v)
+		if v != cpy.Uint32s[i] {
+			t.Errorf("Uint32s: got %v at index %d of the copy; want %v", cpy.Uint32s[i], i, v)
 		}
 	}
 
 Uint64s:
-	if basic.Uint64 != test.Uint64 {
-		t.Errorf("Uint64: got %v; want %v", basic.Uint64, test.Uint64)
+	if cpy.Uint64 != test.Uint64 {
+		t.Errorf("Uint64: got %v; want %v", cpy.Uint64, test.Uint64)
 	}
-	if fmt.Sprintf("%p", basic.Uint64s) == fmt.Sprintf("%p", test.Uint64s) {
+
+	if (*reflect.SliceHeader)(unsafe.Pointer(&test.Uint64s)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.Uint64s)).Data {
 		t.Error("Uint64s: address of copy was the same as original; they should be different")
 		goto Float32s
 	}
-	if len(basic.Uint64s) != len(test.Uint64s) {
-		t.Errorf("Uint64s: len was %d; want %d", len(basic.Uint64s), len(test.Uint64s))
+	if len(cpy.Uint64s) != len(test.Uint64s) {
+		t.Errorf("Uint64s: len was %d; want %d", len(cpy.Uint64s), len(test.Uint64s))
 		goto Float32s
 	}
 	for i, v := range test.Uint64s {
-		if v != basic.Uint64s[i] {
-			t.Errorf("Uint64s: got %v at index %d of the copy; want %v", basic.Uint64s[i], i, v)
+		if v != cpy.Uint64s[i] {
+			t.Errorf("Uint64s: got %v at index %d of the copy; want %v", cpy.Uint64s[i], i, v)
 		}
 	}
 
 Float32s:
-	if basic.Float32 != test.Float32 {
-		t.Errorf("Float32: got %v; want %v", basic.Float32, test.Float32)
+	if cpy.Float32 != test.Float32 {
+		t.Errorf("Float32: got %v; want %v", cpy.Float32, test.Float32)
 	}
-	if fmt.Sprintf("%p", basic.Float32s) == fmt.Sprintf("%p", test.Float32s) {
+
+	if (*reflect.SliceHeader)(unsafe.Pointer(&test.Float32s)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.Float32s)).Data {
 		t.Error("Float32s: address of copy was the same as original; they should be different")
 		goto Float64s
 	}
-	if len(basic.Float32s) != len(test.Float32s) {
-		t.Errorf("Float32s: len was %d; want %d", len(basic.Float32s), len(test.Float32s))
+	if len(cpy.Float32s) != len(test.Float32s) {
+		t.Errorf("Float32s: len was %d; want %d", len(cpy.Float32s), len(test.Float32s))
 		goto Float64s
 	}
 	for i, v := range test.Float32s {
-		if v != basic.Float32s[i] {
-			t.Errorf("Float32s: got %v at index %d of the copy; want %v", basic.Float32s[i], i, v)
+		if v != cpy.Float32s[i] {
+			t.Errorf("Float32s: got %v at index %d of the copy; want %v", cpy.Float32s[i], i, v)
 		}
 	}
 
 Float64s:
-	if basic.Float64 != test.Float64 {
-		t.Errorf("Float64: got %v; want %v", basic.Float64, test.Float64)
+	if cpy.Float64 != test.Float64 {
+		t.Errorf("Float64: got %v; want %v", cpy.Float64, test.Float64)
 	}
-	if fmt.Sprintf("%p", basic.Float64s) == fmt.Sprintf("%p", test.Float64s) {
+
+	if (*reflect.SliceHeader)(unsafe.Pointer(&test.Float64s)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.Float64s)).Data {
 		t.Error("Float64s: address of copy was the same as original; they should be different")
 		goto Complex64s
 	}
-	if len(basic.Float64s) != len(test.Float64s) {
-		t.Errorf("Float64s: len was %d; want %d", len(basic.Float64s), len(test.Float64s))
+	if len(cpy.Float64s) != len(test.Float64s) {
+		t.Errorf("Float64s: len was %d; want %d", len(cpy.Float64s), len(test.Float64s))
 		goto Complex64s
 	}
 	for i, v := range test.Float64s {
-		if v != basic.Float64s[i] {
-			t.Errorf("Float64s: got %v at index %d of the copy; want %v", basic.Float64s[i], i, v)
+		if v != cpy.Float64s[i] {
+			t.Errorf("Float64s: got %v at index %d of the copy; want %v", cpy.Float64s[i], i, v)
 		}
 	}
 
 Complex64s:
-	if basic.Complex64 != test.Complex64 {
-		t.Errorf("Complex64: got %v; want %v", basic.Complex64, test.Complex64)
+	if cpy.Complex64 != test.Complex64 {
+		t.Errorf("Complex64: got %v; want %v", cpy.Complex64, test.Complex64)
 	}
-	if fmt.Sprintf("%p", basic.Complex64s) == fmt.Sprintf("%p", test.Complex64s) {
+
+	if (*reflect.SliceHeader)(unsafe.Pointer(&test.Complex64s)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.Complex64s)).Data {
 		t.Error("Complex64s: address of copy was the same as original; they should be different")
 		goto Complex128s
 	}
-	if len(basic.Complex64s) != len(test.Complex64s) {
-		t.Errorf("Complex64s: len was %d; want %d", len(basic.Complex64s), len(test.Complex64s))
+	if len(cpy.Complex64s) != len(test.Complex64s) {
+		t.Errorf("Complex64s: len was %d; want %d", len(cpy.Complex64s), len(test.Complex64s))
 		goto Complex128s
 	}
 	for i, v := range test.Complex64s {
-		if v != basic.Complex64s[i] {
-			t.Errorf("Complex64s: got %v at index %d of the copy; want %v", basic.Complex64s[i], i, v)
+		if v != cpy.Complex64s[i] {
+			t.Errorf("Complex64s: got %v at index %d of the copy; want %v", cpy.Complex64s[i], i, v)
 		}
 	}
 
 Complex128s:
-	if basic.Complex128 != test.Complex128 {
-		t.Errorf("Complex128s: got %v; want %v", basic.Complex128s, test.Complex128s)
+	if cpy.Complex128 != test.Complex128 {
+		t.Errorf("Complex128s: got %v; want %v", cpy.Complex128s, test.Complex128s)
 	}
-	if &(basic.Complex128s) == &(test.Complex128s) {
+
+	if (*reflect.SliceHeader)(unsafe.Pointer(&test.Complex128s)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.Complex128s)).Data {
 		t.Error("Complex128s: address of copy was the same as original; they should be different")
 		goto Interfaces
 	}
-	if len(basic.Complex128s) != len(test.Complex128s) {
-		t.Errorf("Complex128s: len was %d; want %d", len(basic.Complex128s), len(test.Complex128s))
+	if len(cpy.Complex128s) != len(test.Complex128s) {
+		t.Errorf("Complex128s: len was %d; want %d", len(cpy.Complex128s), len(test.Complex128s))
 		goto Interfaces
 	}
 	for i, v := range test.Complex128s {
-		if v != basic.Complex128s[i] {
-			t.Errorf("Complex128s: got %v at index %d of the copy; want %v", basic.Complex128s[i], i, v)
+		if v != cpy.Complex128s[i] {
+			t.Errorf("Complex128s: got %v at index %d of the copy; want %v", cpy.Complex128s[i], i, v)
 		}
 	}
 
 Interfaces:
-	if basic.Interface != test.Interface {
-		t.Errorf("Interface: got %v; want %v", basic.Interface, test.Interface)
+	if cpy.Interface != test.Interface {
+		t.Errorf("Interface: got %v; want %v", cpy.Interface, test.Interface)
 	}
-	if fmt.Sprintf("%p", basic.Interfaces) == fmt.Sprintf("%p", test.Interfaces) {
+
+	if (*reflect.SliceHeader)(unsafe.Pointer(&test.Interfaces)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.Interfaces)).Data {
 		t.Error("Interfaces: address of copy was the same as original; they should be different")
 		return
 	}
-	if len(basic.Interfaces) != len(test.Interfaces) {
-		t.Errorf("Interfaces: len was %d; want %d", len(basic.Interfaces), len(test.Interfaces))
+	if len(cpy.Interfaces) != len(test.Interfaces) {
+		t.Errorf("Interfaces: len was %d; want %d", len(cpy.Interfaces), len(test.Interfaces))
 		return
 	}
 	for i, v := range test.Interfaces {
-		if v != basic.Interfaces[i] {
-			t.Errorf("Interfaces: got %v at index %d of the copy; want %v", basic.Interfaces[i], i, v)
+		if v != cpy.Interfaces[i] {
+			t.Errorf("Interfaces: got %v at index %d of the copy; want %v", cpy.Interfaces[i], i, v)
 		}
 	}
 }
@@ -563,14 +577,10 @@ Interfaces:
 // not meant to be exhaustive
 func TestComplexSlices(t *testing.T) {
 	orig3Int := [][][]int{[][]int{[]int{1, 2, 3}, []int{11, 22, 33}}, [][]int{[]int{7, 8, 9}, []int{66, 77, 88, 99}}}
-	cpy := Copy(orig3Int)
-	cpyI, ok := cpy.([][][]int)
-	if !ok {
-		t.Errorf("copy of [][][]int: expected the interface to contain a [][][]int; it didn't")
-		goto sliceMap
-	}
-	if fmt.Sprintf("%p", cpyI) == fmt.Sprintf("%p", orig3Int) {
+	cpyI := Copy(orig3Int).([][][]int)
+	if (*reflect.SliceHeader)(unsafe.Pointer(&orig3Int)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpyI)).Data {
 		t.Error("[][][]int: address of copy was the same as original; they should be different")
+		return
 	}
 	if len(orig3Int) != len(cpyI) {
 		t.Errorf("[][][]int: len of copy was %d; want %d", len(cpyI), len(orig3Int))
@@ -597,13 +607,8 @@ func TestComplexSlices(t *testing.T) {
 
 sliceMap:
 	slMap := []map[int]string{map[int]string{0: "a", 1: "b"}, map[int]string{10: "k", 11: "l", 12: "m"}}
-	cpy = Copy(slMap)
-	cpyM, ok := cpy.([]map[int]string)
-	if !ok {
-		t.Errorf("copy of []map[int]string: expected the interface to contain a []map[int]string; it didn't")
-		goto done
-	}
-	if fmt.Sprintf("%p", cpyM) == fmt.Sprintf("%p", slMap) {
+	cpyM := Copy(slMap).([]map[int]string)
+	if (*reflect.SliceHeader)(unsafe.Pointer(&slMap)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpyM)).Data {
 		t.Error("[]map[int]string: address of copy was the same as original; they should be different")
 	}
 	if len(slMap) != len(cpyM) {
@@ -636,7 +641,7 @@ type A struct {
 	NilSl  []string
 	Map    map[string]int
 	MapB   map[string]*B
-	SliceB []*B
+	SliceB []B
 	B
 	T time.Time
 }
@@ -654,54 +659,54 @@ var AStruct = A{
 		"hi":  &B{Vals: []string{"hello", "bonjour"}},
 		"bye": &B{Vals: []string{"good-bye", "au revoir"}},
 	},
-	SliceB: []*B{
-		&B{Vals: []string{"Ciao", "Aloha"}},
+	SliceB: []B{
+		B{Vals: []string{"Ciao", "Aloha"}},
 	},
 	B: B{Vals: []string{"42"}},
 	T: time.Now(),
 }
 
 func TestStructA(t *testing.T) {
-	cpy := Copy(AStruct)
-	a, ok := cpy.(A)
-	if !ok {
-		t.Error("expected copy to be of type AStruct, it wasn't")
-		return
-	}
-	if &a == &AStruct {
+	cpy := Copy(AStruct).(A)
+	if &cpy == &AStruct {
 		t.Error("expected copy to have a different address than the original; it was the same")
 		return
 	}
-	if a.Int != AStruct.Int {
-		t.Errorf("A.Int: got %v, want %v", a.Int, AStruct.Int)
+	if cpy.Int != AStruct.Int {
+		t.Errorf("A.Int: got %v, want %v", cpy.Int, AStruct.Int)
 	}
-	if a.String != AStruct.String {
-		t.Errorf("A.String: got %v; want %v", a.String, AStruct.String)
+	if cpy.String != AStruct.String {
+		t.Errorf("A.String: got %v; want %v", cpy.String, AStruct.String)
 	}
-	if fmt.Sprintf("%p", a.UintSl) == fmt.Sprintf("%p", AStruct.UintSl) {
+	if (*reflect.SliceHeader)(unsafe.Pointer(&cpy.UintSl)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&AStruct.UintSl)).Data {
 		t.Error("A.Uintsl: expected the copies address to be different; it wasn't")
-		goto AMap
+		goto NilSl
 	}
-	if len(a.UintSl) != len(AStruct.UintSl) {
-		t.Errorf("A.UintSl: got len of %d, want %d", len(a.UintSl), len(AStruct.UintSl))
-		goto AMap
+	if len(cpy.UintSl) != len(AStruct.UintSl) {
+		t.Errorf("A.UintSl: got len of %d, want %d", len(cpy.UintSl), len(AStruct.UintSl))
+		goto NilSl
 	}
 	for i, v := range AStruct.UintSl {
-		if a.UintSl[i] != v {
-			t.Errorf("A.UintSl %d: got %d, want %d", i, a.UintSl[i], v)
+		if cpy.UintSl[i] != v {
+			t.Errorf("A.UintSl %d: got %d, want %d", i, cpy.UintSl[i], v)
 		}
 	}
-AMap:
-	if fmt.Sprintf("%p", a.Map) == fmt.Sprintf("%p", AStruct.Map) {
+
+NilSl:
+	if cpy.NilSl != nil {
+		t.Error("A.NilSl: expected slice to be nil, it wasn't")
+	}
+
+	if *(*uintptr)(unsafe.Pointer(&cpy.Map)) == *(*uintptr)(unsafe.Pointer(&AStruct.Map)) {
 		t.Error("A.Map: expected the copy's address to be different; it wasn't")
 		goto AMapB
 	}
-	if len(a.Map) != len(AStruct.Map) {
-		t.Errorf("A.Map: got len of %d, want %d", len(a.Map), len(AStruct.Map))
+	if len(cpy.Map) != len(AStruct.Map) {
+		t.Errorf("A.Map: got len of %d, want %d", len(cpy.Map), len(AStruct.Map))
 		goto AMapB
 	}
 	for k, v := range AStruct.Map {
-		val, ok := a.Map[k]
+		val, ok := cpy.Map[k]
 		if !ok {
 			t.Errorf("A.Map: expected the key %s to exist in the copy, it didn't", k)
 			continue
@@ -712,22 +717,27 @@ AMap:
 	}
 
 AMapB:
-	if fmt.Sprintf("%p", a.MapB) == fmt.Sprintf("%p", AStruct.MapB) {
+	if *(*uintptr)(unsafe.Pointer(&cpy.MapB)) == *(*uintptr)(unsafe.Pointer(&AStruct.MapB)) {
 		t.Error("A.MapB: expected the copy's address to be different; it wasn't")
 		goto ASliceB
 	}
-	if len(a.MapB) != len(AStruct.MapB) {
-		t.Errorf("A.MapB: got len of %d, want %d", len(a.MapB), len(AStruct.MapB))
+	if len(cpy.MapB) != len(AStruct.MapB) {
+		t.Errorf("A.MapB: got len of %d, want %d", len(cpy.MapB), len(AStruct.MapB))
 		goto ASliceB
 	}
 	for k, v := range AStruct.MapB {
-		val, ok := a.MapB[k]
+		val, ok := cpy.MapB[k]
 		if !ok {
 			t.Errorf("A.MapB: expected the key %s to exist in the copy, it didn't", k)
 			continue
 		}
-		if fmt.Sprintf("%p", val) == fmt.Sprintf("%p", v) {
+		if unsafe.Pointer(val) == unsafe.Pointer(v) {
 			t.Errorf("A.MapB[%s]: expected the addresses of the values to be different; they weren't", k)
+			continue
+		}
+		// the slice headers should point to different data
+		if (*reflect.SliceHeader)(unsafe.Pointer(&v.Vals)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&val.Vals)).Data {
+			t.Errorf("%s: expected B's SliceHeaders to point to different Data locations; they did not.", k)
 			continue
 		}
 		for i, vv := range v.Vals {
@@ -736,57 +746,62 @@ AMapB:
 			}
 		}
 	}
+
 ASliceB:
-	if fmt.Sprintf("%p", AStruct.SliceB) == fmt.Sprintf("%p", a.SliceB) {
+	if (*reflect.SliceHeader)(unsafe.Pointer(&AStruct.SliceB)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.SliceB)).Data {
 		t.Error("A.SliceB: expected the copy's address to be different; it wasn't")
 		goto B
 	}
 
-	if len(AStruct.SliceB) != len(a.SliceB) {
-		t.Errorf("A.SliceB: got length of %d; want %d", len(a.SliceB), len(AStruct.SliceB))
+	if len(AStruct.SliceB) != len(cpy.SliceB) {
+		t.Errorf("A.SliceB: got length of %d; want %d", len(cpy.SliceB), len(AStruct.SliceB))
 		goto B
 	}
 
-	for i, v := range AStruct.SliceB {
-		if fmt.Sprintf("%p", v) == fmt.Sprintf("%p", a.SliceB[i]) {
+	for i := range AStruct.SliceB {
+		if unsafe.Pointer(&AStruct.SliceB[i]) == unsafe.Pointer(&cpy.SliceB[i]) {
 			t.Errorf("A.SliceB[%d]: expected them to have different addresses, they didn't", i)
 			continue
 		}
-		if len(v.Vals) != len(a.SliceB[i].Vals) {
+		if (*reflect.SliceHeader)(unsafe.Pointer(&AStruct.SliceB[i].Vals)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.SliceB[i].Vals)).Data {
+			t.Errorf("A.SliceB[%d]: expected B.Vals SliceHeader.Data to point to different locations; they did not", i)
+			continue
+		}
+		if len(AStruct.SliceB[i].Vals) != len(cpy.SliceB[i].Vals) {
 			t.Errorf("A.SliceB[%d]: expected B's vals to have the same length, they didn't", i)
 			continue
 		}
-		for j, val := range v.Vals {
-			if val != a.SliceB[i].Vals[j] {
-				t.Errorf("A.SliceB[%d].Vals[%d]: got %v; want %v", i, j, a.SliceB[i].Vals[j], val)
+		for j, val := range AStruct.SliceB[i].Vals {
+			if val != cpy.SliceB[i].Vals[j] {
+				t.Errorf("A.SliceB[%d].Vals[%d]: got %v; want %v", i, j, cpy.SliceB[i].Vals[j], val)
 			}
 		}
 	}
 B:
-	if fmt.Sprintf("%p", &AStruct.B) == fmt.Sprintf("%p", &a.B) {
+	if unsafe.Pointer(&AStruct.B) == unsafe.Pointer(&cpy.B) {
 		t.Error("A.B: expected them to have different addresses, they didn't")
 		goto T
 	}
-	if fmt.Sprintf("%p", AStruct.B.Vals) == fmt.Sprintf("%p", a.B.Vals) {
-		t.Error("A.B.Vals: expected them to have different addresses, they didn't")
+	if (*reflect.SliceHeader)(unsafe.Pointer(&AStruct.B.Vals)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpy.B.Vals)).Data {
+		t.Error("A.B.Vals: expected the SliceHeaders.Data to point to different locations; they didn't")
 		goto T
 	}
-	if len(AStruct.B.Vals) != len(a.B.Vals) {
+	if len(AStruct.B.Vals) != len(cpy.B.Vals) {
 		t.Error("A.B.Vals: expected their lengths to be the same, they weren't")
 		goto T
 	}
 	for i, v := range AStruct.B.Vals {
-		if v != a.B.Vals[i] {
-			t.Errorf("A.B.Vals[%d]: got %s want %s", i, a.B.Vals[i], v)
+		if v != cpy.B.Vals[i] {
+			t.Errorf("A.B.Vals[%d]: got %s want %s", i, cpy.B.Vals[i], v)
 		}
 	}
 T:
-	if fmt.Sprintf("%p", &AStruct.T) == fmt.Sprintf("%p", &a.T) {
+	if fmt.Sprintf("%p", &AStruct.T) == fmt.Sprintf("%p", &cpy.T) {
 		t.Error("A.T: expected them to have different addresses, they didn't")
 		return
 	}
-	if AStruct.T != a.T {
-		t.Errorf("A.T: got %v, want %v", a.T, AStruct.T)
+	if AStruct.T != cpy.T {
+		t.Errorf("A.T: got %v, want %v", cpy.T, AStruct.T)
 	}
 }
 
@@ -808,29 +823,28 @@ func TestUnexportedFields(t *testing.T) {
 		cc: []int{1, 2, 3},
 		dd: map[string]string{"hello": "bonjour"},
 	}
-	cpy := Copy(u)
-	v := cpy.(*Unexported)
-	if v == u {
+	cpy := Copy(u).(*Unexported)
+	if cpy == u {
 		t.Error("expected addresses to be different, they weren't")
 		return
 	}
-	if u.A != v.A {
-		t.Errorf("Unexported.A: got %s want %s", v.A, u.A)
+	if u.A != cpy.A {
+		t.Errorf("Unexported.A: got %s want %s", cpy.A, u.A)
 	}
-	if u.B != v.B {
-		t.Errorf("Unexported.A: got %d want %d", v.B, u.B)
+	if u.B != cpy.B {
+		t.Errorf("Unexported.A: got %d want %d", cpy.B, u.B)
 	}
-	if v.aa != "" {
-		t.Errorf("Unexported.aa: unexported field should not be set, it was set to %s", v.aa)
+	if cpy.aa != "" {
+		t.Errorf("Unexported.aa: unexported field should not be set, it was set to %s", cpy.aa)
 	}
-	if v.bb != 0 {
-		t.Errorf("Unexported.bb: unexported field should not be set, it was set to %d", v.bb)
+	if cpy.bb != 0 {
+		t.Errorf("Unexported.bb: unexported field should not be set, it was set to %d", cpy.bb)
 	}
-	if v.cc != nil {
-		t.Errorf("Unexported.cc: unexported field should not be set, it was set to %#v", v.cc)
+	if cpy.cc != nil {
+		t.Errorf("Unexported.cc: unexported field should not be set, it was set to %#v", cpy.cc)
 	}
-	if v.dd != nil {
-		t.Errorf("Unexported.dd: unexported field should not be set, it was set to %#v", v.dd)
+	if cpy.dd != nil {
+		t.Errorf("Unexported.dd: unexported field should not be set, it was set to %#v", cpy.dd)
 	}
 }
 
