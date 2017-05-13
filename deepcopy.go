@@ -31,7 +31,7 @@ func Copy(src interface{}) interface{} {
 	// Recursively copy the original.
 	copyRecursive(original, cpy)
 
-	// Return theb copy as an interface.
+	// Return the copy as an interface.
 	return cpy.Interface()
 }
 
