@@ -892,3 +892,99 @@ func TestTimeCopy(t *testing.T) {
 		}
 	}
 }
+
+func TestIssue9(t *testing.T) {
+	// simple pointer copy
+	x := 42
+	testA := map[string]*int{
+		"a": nil,
+		"b": &x,
+	}
+	copyA := Copy(testA).(map[string]*int)
+	if unsafe.Pointer(&testA) == unsafe.Pointer(&copyA) {
+		t.Errorf("expected the map pointers to be different: testA: %v\tcopyA: %v", unsafe.Pointer(&testA), unsafe.Pointer(&copyA))
+	}
+	if !reflect.DeepEqual(testA, copyA) {
+		t.Errorf("got %#v; want %#v", copyA, testA)
+	}
+	if testA["b"] == copyA["b"] {
+		t.Errorf("entries for 'b' pointed to the same address: %v; expected them to point to different addresses", testA["b"])
+	}
+
+	// map copy
+	type Foo struct {
+		Alpha string
+	}
+
+	type Bar struct {
+		Beta  string
+		Gamma int
+		Delta *Foo
+	}
+
+	type Biz struct {
+		Epsilon map[int]*Bar
+	}
+
+	testB := Biz{
+		Epsilon: map[int]*Bar{
+			0: &Bar{},
+			1: &Bar{
+				Beta:  "don't panic",
+				Gamma: 42,
+				Delta: nil,
+			},
+			2: &Bar{
+				Beta:  "sudo make me a sandwich.",
+				Gamma: 11,
+				Delta: &Foo{
+					Alpha: "okay.",
+				},
+			},
+		},
+	}
+
+	copyB := Copy(testB).(Biz)
+	if !reflect.DeepEqual(testB, copyB) {
+		t.Errorf("got %#v; want %#v", copyB, testB)
+		return
+	}
+
+	// check that the maps point to different locations
+	if unsafe.Pointer(&testB.Epsilon) == unsafe.Pointer(&copyB.Epsilon) {
+		t.Errorf("expected the map pointers to be different; they weren't: testB: %v\tcopyB: %v", unsafe.Pointer(&testB.Epsilon), unsafe.Pointer(&copyB.Epsilon))
+	}
+
+	for k, v := range testB.Epsilon {
+		if v == nil && copyB.Epsilon[k] == nil {
+			continue
+		}
+		if v == nil && copyB.Epsilon[k] != nil {
+			t.Errorf("%d: expected copy of a nil entry to be nil; it wasn't: %#v", copyB.Epsilon[k])
+			continue
+		}
+		if v == copyB.Epsilon[k] {
+			t.Errorf("entries for '%d' pointed to the same address: %v; expected them to point to different addresses", v)
+			continue
+		}
+		if v.Beta != copyB.Epsilon[k].Beta {
+			t.Errorf("%d.Beta: got %q; want %q", copyB.Epsilon[k].Beta, v.Beta)
+		}
+		if v.Gamma != copyB.Epsilon[k].Gamma {
+			t.Errorf("%d.Gamma: got %d; want %d", copyB.Epsilon[k].Gamma, v.Gamma)
+		}
+		if v.Delta == nil && copyB.Epsilon[k].Delta == nil {
+			continue
+		}
+		if v.Delta == nil && copyB.Epsilon[k].Delta != nil {
+			t.Errorf("%d.Delta: got %#v; want nil", copyB.Epsilon[k].Delta)
+		}
+		if v.Delta == copyB.Epsilon[k].Delta {
+			t.Errorf("%d.Delta: expected the pointers to be different, they were the same: %v", k, v.Delta)
+			continue
+		}
+		if v.Delta.Alpha != copyB.Epsilon[k].Delta.Alpha {
+			t.Errorf("%d.Delta.Foo: got %q; want %q", v.Delta.Alpha, copyB.Epsilon[k].Delta.Alpha)
+		}
+	}
+}
