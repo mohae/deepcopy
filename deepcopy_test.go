@@ -917,7 +917,7 @@ func TestIssue9(t *testing.T) {
 	}
 	copyA := Copy(testA).(map[string]*int)
 	if unsafe.Pointer(&testA) == unsafe.Pointer(&copyA) {
-		t.Errorf("expected the map pointers to be different: testA: %v\tcopyA: %v", unsafe.Pointer(&testA), unsafe.Pointer(&copyA))
+		t.Fatalf("expected the map pointers to be different: testA: %v\tcopyA: %v", unsafe.Pointer(&testA), unsafe.Pointer(&copyA))
 	}
 	if !reflect.DeepEqual(testA, copyA) {
 		t.Errorf("got %#v; want %#v", copyA, testA)
@@ -967,7 +967,7 @@ func TestIssue9(t *testing.T) {
 
 	// check that the maps point to different locations
 	if unsafe.Pointer(&testB.Epsilon) == unsafe.Pointer(&copyB.Epsilon) {
-		t.Errorf("expected the map pointers to be different; they weren't: testB: %v\tcopyB: %v", unsafe.Pointer(&testB.Epsilon), unsafe.Pointer(&copyB.Epsilon))
+		t.Fatalf("expected the map pointers to be different; they weren't: testB: %v\tcopyB: %v", unsafe.Pointer(&testB.Epsilon), unsafe.Pointer(&copyB.Epsilon))
 	}
 
 	for k, v := range testB.Epsilon {
@@ -1002,4 +1002,48 @@ func TestIssue9(t *testing.T) {
 			t.Errorf("%d.Delta.Foo: got %q; want %q", v.Delta.Alpha, copyB.Epsilon[k].Delta.Alpha)
 		}
 	}
+
+	// test that map keys are deep copied
+	testC := map[*Foo][]string{
+		&Foo{Alpha: "Henry Dorsett Case"}: []string{
+			"Cutter",
+		},
+		&Foo{Alpha: "Molly Millions"}: []string{
+			"Rose Kolodny",
+			"Cat Mother",
+			"Steppin' Razor",
+		},
+	}
+
+	copyC := Copy(testC).(map[*Foo][]string)
+	if unsafe.Pointer(&testC) == unsafe.Pointer(&copyC) {
+		t.Fatalf("expected the map pointers to be different; they weren't: testB: %v\tcopyB: %v", unsafe.Pointer(&testB.Epsilon), unsafe.Pointer(&copyB.Epsilon))
+	}
+
+	// make sure the lengths are the same
+	if len(testC) != len(copyC) {
+		t.Fatalf("got len %d; want %d", len(copyC), len(testC))
+	}
+
+	// check that everything was deep copied: since the key is a pointer, we check to
+	// see if the pointers are different but the values being pointed to are the same.
+	for k, v := range testC {
+		for kk, vv := range copyC {
+			if *kk == *k {
+				if kk == k {
+					t.Errorf("key pointers should be different: orig: %p; copy: %p", k, kk)
+				}
+				// check that the slices are the same but different
+				if !reflect.DeepEqual(v, vv) {
+					t.Errorf("expected slice contents to be the same; they weren't: orig: %v; copy: %v", v, vv)
+				}
+
+				if (*reflect.SliceHeader)(unsafe.Pointer(&v)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&vv)).Data {
+					t.Error("expected the SliceHeaders.Data to point to different locations; they didn't: %v", (*reflect.SliceHeader)(unsafe.Pointer(&v)).Data)
+				}
+				break
+			}
+		}
+	}
+
 }
