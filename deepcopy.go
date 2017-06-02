@@ -31,15 +31,15 @@ func Copy(src interface{}) interface{} {
 	cpy := reflect.New(original.Type()).Elem()
 
 	// Recursively copy the original.
-	copyRecursive(original, cpy)
+	CopyRecursive(original, cpy)
 
 	// Return the copy as an interface.
 	return cpy.Interface()
 }
 
-// copyRecursive does the actual copying of the interface. It currently has
+// CopyRecursive does the actual copying of the interface. It currently has
 // limited support for what it can handle. Add as needed.
-func copyRecursive(original, cpy reflect.Value) {
+func CopyRecursive(original, cpy reflect.Value) {
 	// handle according to original's Kind
 	switch original.Kind() {
 	case reflect.Ptr:
@@ -51,7 +51,7 @@ func copyRecursive(original, cpy reflect.Value) {
 			return
 		}
 		cpy.Set(reflect.New(originalValue.Type()))
-		copyRecursive(originalValue, cpy.Elem())
+		CopyRecursive(originalValue, cpy.Elem())
 
 	case reflect.Interface:
 		// If this is a nil, don't do anything
@@ -63,7 +63,7 @@ func copyRecursive(original, cpy reflect.Value) {
 
 		// Get the value by calling Elem().
 		copyValue := reflect.New(originalValue.Type()).Elem()
-		copyRecursive(originalValue, copyValue)
+		CopyRecursive(originalValue, copyValue)
 		cpy.Set(copyValue)
 
 	case reflect.Struct:
@@ -80,7 +80,7 @@ func copyRecursive(original, cpy reflect.Value) {
 			if original.Type().Field(i).PkgPath != "" {
 				continue
 			}
-			copyRecursive(original.Field(i), cpy.Field(i))
+			CopyRecursive(original.Field(i), cpy.Field(i))
 		}
 
 	case reflect.Slice:
@@ -90,7 +90,7 @@ func copyRecursive(original, cpy reflect.Value) {
 		// Make a new slice and copy each element.
 		cpy.Set(reflect.MakeSlice(original.Type(), original.Len(), original.Cap()))
 		for i := 0; i < original.Len(); i++ {
-			copyRecursive(original.Index(i), cpy.Index(i))
+			CopyRecursive(original.Index(i), cpy.Index(i))
 		}
 
 	case reflect.Map:
@@ -101,7 +101,7 @@ func copyRecursive(original, cpy reflect.Value) {
 		for _, key := range original.MapKeys() {
 			originalValue := original.MapIndex(key)
 			copyValue := reflect.New(originalValue.Type()).Elem()
-			copyRecursive(originalValue, copyValue)
+			CopyRecursive(originalValue, copyValue)
 			// if key is a pointer, make a deep copy
 			if key.Kind() == reflect.Ptr {
 				copyKey := Copy(key.Interface())
