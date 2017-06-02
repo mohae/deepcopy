@@ -893,6 +893,21 @@ func TestTimeCopy(t *testing.T) {
 	}
 }
 
+func TestPointerToStruct(t *testing.T) {
+	type Foo struct {
+		Bar int
+	}
+
+	f := &Foo{Bar: 42}
+	cpy := Copy(f)
+	if f == cpy {
+		t.Errorf("expected copy to point to a different location: orig: %p; copy: %p", f, cpy)
+	}
+	if !reflect.DeepEqual(f, cpy) {
+		t.Errorf("expected the copy to be equal to the original (except for memory location); it wasn't: got %#v; want %#v", f, cpy)
+	}
+}
+
 func TestIssue9(t *testing.T) {
 	// simple pointer copy
 	x := 42
