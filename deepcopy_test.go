@@ -1046,4 +1046,39 @@ func TestIssue9(t *testing.T) {
 		}
 	}
 
+	type Bizz struct {
+		*Foo
+	}
+
+	testD := map[Bizz]string{
+		Bizz{&Foo{"Neuromancer"}}: "Rio",
+		Bizz{&Foo{"Wintermute"}}:  "Berne",
+	}
+	copyD := Copy(testD).(map[Bizz]string)
+	if len(copyD) != len(testD) {
+		t.Fatalf("copy had %d elements; expected %d", len(copyD), len(testD))
+	}
+
+	for k, v := range testD {
+		var found bool
+		for kk, vv := range copyD {
+			if reflect.DeepEqual(k, kk) {
+				found = true
+				// check that Foo points to different locations
+				if unsafe.Pointer(k.Foo) == unsafe.Pointer(kk.Foo) {
+					t.Errorf("Expected Foo to point to different locations; they didn't: orig: %p; copy %p", k.Foo, kk.Foo)
+					break
+				}
+				if *k.Foo != *kk.Foo {
+					t.Errorf("Expected copy of the key's Foo field to have the same value as the original, it wasn't: orig: %#v; copy: %#v", k.Foo, kk.Foo)
+				}
+				if v != vv {
+					t.Errorf("Expected the values to be the same; the weren't: got %v; want %v", vv, v)
+				}
+			}
+		}
+		if !found {
+			t.Errorf("expected key %v to exist in the copy; it didn't", k)
+		}
+	}
 }
