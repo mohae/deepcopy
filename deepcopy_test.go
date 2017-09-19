@@ -1082,3 +1082,29 @@ func TestIssue9(t *testing.T) {
 		}
 	}
 }
+
+type I struct {
+	A string
+}
+
+func (i *I) DeepCopy() interface{} {
+	return &I{A: "custom copy"}
+}
+
+type NestI struct {
+	I *I
+}
+
+func TestInterface(t *testing.T) {
+	i := &I{A: "A"}
+	copied := Copy(i).(*I)
+	if copied.A != "custom copy" {
+		t.Errorf("expected value %v, but it's %v", "custom copy", copied.A)
+	}
+	// check for nesting values
+	ni := &NestI{I: &I{A: "A"}}
+	copiedNest := Copy(ni).(*NestI)
+	if copiedNest.I.A != "custom copy" {
+		t.Errorf("expected value %v, but it's %v", "custom copy", copiedNest.I.A)
+	}
+}
