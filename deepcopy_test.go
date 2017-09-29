@@ -975,31 +975,31 @@ func TestIssue9(t *testing.T) {
 			continue
 		}
 		if v == nil && copyB.Epsilon[k] != nil {
-			t.Errorf("%d: expected copy of a nil entry to be nil; it wasn't: %#v", copyB.Epsilon[k])
+			t.Errorf("%d: expected copy of a nil entry to be nil; it wasn't: %#v", k, copyB.Epsilon[k])
 			continue
 		}
 		if v == copyB.Epsilon[k] {
-			t.Errorf("entries for '%d' pointed to the same address: %v; expected them to point to different addresses", v)
+			t.Errorf("entries for '%d' pointed to the same address: %v; expected them to point to different addresses", k, v)
 			continue
 		}
 		if v.Beta != copyB.Epsilon[k].Beta {
-			t.Errorf("%d.Beta: got %q; want %q", copyB.Epsilon[k].Beta, v.Beta)
+			t.Errorf("%d.Beta: got %q; want %q", k, copyB.Epsilon[k].Beta, v.Beta)
 		}
 		if v.Gamma != copyB.Epsilon[k].Gamma {
-			t.Errorf("%d.Gamma: got %d; want %d", copyB.Epsilon[k].Gamma, v.Gamma)
+			t.Errorf("%d.Gamma: got %d; want %d", k, copyB.Epsilon[k].Gamma, v.Gamma)
 		}
 		if v.Delta == nil && copyB.Epsilon[k].Delta == nil {
 			continue
 		}
 		if v.Delta == nil && copyB.Epsilon[k].Delta != nil {
-			t.Errorf("%d.Delta: got %#v; want nil", copyB.Epsilon[k].Delta)
+			t.Errorf("%d.Delta: got %#v; want nil", k, copyB.Epsilon[k].Delta)
 		}
 		if v.Delta == copyB.Epsilon[k].Delta {
 			t.Errorf("%d.Delta: expected the pointers to be different, they were the same: %v", k, v.Delta)
 			continue
 		}
 		if v.Delta.Alpha != copyB.Epsilon[k].Delta.Alpha {
-			t.Errorf("%d.Delta.Foo: got %q; want %q", v.Delta.Alpha, copyB.Epsilon[k].Delta.Alpha)
+			t.Errorf("%d.Delta.Foo: got %q; want %q", k, v.Delta.Alpha, copyB.Epsilon[k].Delta.Alpha)
 		}
 	}
 
@@ -1039,7 +1039,7 @@ func TestIssue9(t *testing.T) {
 				}
 
 				if (*reflect.SliceHeader)(unsafe.Pointer(&v)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&vv)).Data {
-					t.Error("expected the SliceHeaders.Data to point to different locations; they didn't: %v", (*reflect.SliceHeader)(unsafe.Pointer(&v)).Data)
+					t.Errorf("expected the SliceHeaders.Data to point to different locations; they didn't: %v", (*reflect.SliceHeader)(unsafe.Pointer(&v)).Data)
 				}
 				break
 			}
