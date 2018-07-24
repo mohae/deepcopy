@@ -1108,3 +1108,11 @@ func TestInterface(t *testing.T) {
 		t.Errorf("expected value %v, but it's %v", "custom copy", copiedNest.I.A)
 	}
 }
+
+func TestSliceCap(t *testing.T) {
+	s := make([]int, 0, 10)
+	ns := Copy(s).([]int)
+	if cap(ns) != 0 {
+		t.Errorf("expected cap(ns) == 0, got %d", cap(ns))
+	}
+}

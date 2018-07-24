@@ -101,7 +101,7 @@ func copyRecursive(original, cpy reflect.Value) {
 			return
 		}
 		// Make a new slice and copy each element.
-		cpy.Set(reflect.MakeSlice(original.Type(), original.Len(), original.Cap()))
+		cpy.Set(reflect.MakeSlice(original.Type(), original.Len(), original.Len()))
 		for i := 0; i < original.Len(); i++ {
 			copyRecursive(original.Index(i), cpy.Index(i))
 		}
