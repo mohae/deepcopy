@@ -87,12 +87,22 @@ func copyRecursive(original, cpy reflect.Value) {
 		}
 		// Go through each field of the struct and copy it.
 		for i := 0; i < original.NumField(); i++ {
+			field := original.Type().Field(i)
 			// The Type's StructField for a given field is checked to see if StructField.PkgPath
 			// is set to determine if the field is exported or not because CanSet() returns false
 			// for settable fields.  I'm not sure why.  -mohae
-			if original.Type().Field(i).PkgPath != "" {
+			if field.PkgPath != "" {
 				continue
 			}
+
+			switch field.Tag.Get("deepcopy") {
+			case "-":
+				continue
+			case "=":
+				cpy.Field(i).Set(original.Field(i))
+				continue
+			}
+
 			copyRecursive(original.Field(i), cpy.Field(i))
 		}
 
