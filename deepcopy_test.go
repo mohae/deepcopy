@@ -908,6 +908,45 @@ func TestPointerToStruct(t *testing.T) {
 	}
 }
 
+func TestFieldSkipByTag(t *testing.T) {
+	type Foo struct {
+		Bar   int `deepcopy:"-"`
+		Thing int
+	}
+
+	f := Foo{Bar: 42, Thing: 44}
+	cpy := Copy(f).(Foo)
+
+	if !reflect.DeepEqual(cpy, Foo{Thing: 44}) { // Bar is skipped
+		t.Errorf("expected the copy to be equal to the original (except for memory location); it wasn't: got %#v; want %#v", f, cpy)
+	}
+}
+
+func TestFieldAssignByTag(t *testing.T) {
+	type Inner struct {
+		Field int
+	}
+	type Foo struct {
+		Bar   *Inner `deepcopy:"="`
+		Thing int
+	}
+
+	inner := &Inner{Field: 100}
+	f := Foo{Bar: inner, Thing: 44}
+	cpy := Copy(f).(Foo)
+
+	if !reflect.DeepEqual(cpy, Foo{Bar: inner, Thing: 44}) { // Bar is skipped
+		t.Errorf("expected the copy to be equal to the original (except for memory location); it wasn't: got %#v; want %#v", f, cpy)
+	}
+
+	inner.Field = 101
+	if inner.Field != f.Bar.Field || f.Bar.Field != cpy.Bar.Field {
+		t.Errorf("expected that pointer-assigned value will change in both original and copy: %d != %d != %d",
+			inner.Field, f.Bar.Field, cpy.Bar.Field)
+	}
+
+}
+
 func TestIssue9(t *testing.T) {
 	// simple pointer copy
 	x := 42
