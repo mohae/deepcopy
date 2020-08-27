@@ -6,6 +6,11 @@ import (
 	"testing"
 	"time"
 	"unsafe"
+
+	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/testing/protocmp"
+
+	testpb "github.com/chronologos/deepcopy/test"
 )
 
 // just basic is this working stuff
@@ -576,7 +581,7 @@ Interfaces:
 
 // not meant to be exhaustive
 func TestComplexSlices(t *testing.T) {
-	orig3Int := [][][]int{[][]int{[]int{1, 2, 3}, []int{11, 22, 33}}, [][]int{[]int{7, 8, 9}, []int{66, 77, 88, 99}}}
+	orig3Int := [][][]int{{{1, 2, 3}, {11, 22, 33}}, {{7, 8, 9}, {66, 77, 88, 99}}}
 	cpyI := Copy(orig3Int).([][][]int)
 	if (*reflect.SliceHeader)(unsafe.Pointer(&orig3Int)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpyI)).Data {
 		t.Error("[][][]int: address of copy was the same as original; they should be different")
@@ -606,7 +611,7 @@ func TestComplexSlices(t *testing.T) {
 	}
 
 sliceMap:
-	slMap := []map[int]string{map[int]string{0: "a", 1: "b"}, map[int]string{10: "k", 11: "l", 12: "m"}}
+	slMap := []map[int]string{{0: "a", 1: "b"}, {10: "k", 11: "l", 12: "m"}}
 	cpyM := Copy(slMap).([]map[int]string)
 	if (*reflect.SliceHeader)(unsafe.Pointer(&slMap)).Data == (*reflect.SliceHeader)(unsafe.Pointer(&cpyM)).Data {
 		t.Error("[]map[int]string: address of copy was the same as original; they should be different")
@@ -656,11 +661,11 @@ var AStruct = A{
 	UintSl: []uint{0, 1, 2, 3},
 	Map:    map[string]int{"a": 1, "b": 2},
 	MapB: map[string]*B{
-		"hi":  &B{Vals: []string{"hello", "bonjour"}},
-		"bye": &B{Vals: []string{"good-bye", "au revoir"}},
+		"hi":  {Vals: []string{"hello", "bonjour"}},
+		"bye": {Vals: []string{"good-bye", "au revoir"}},
 	},
 	SliceB: []B{
-		B{Vals: []string{"Ciao", "Aloha"}},
+		{Vals: []string{"Ciao", "Aloha"}},
 	},
 	B: B{Vals: []string{"42"}},
 	T: time.Now(),
@@ -943,13 +948,13 @@ func TestIssue9(t *testing.T) {
 
 	testB := Biz{
 		Epsilon: map[int]*Bar{
-			0: &Bar{},
-			1: &Bar{
+			0: {},
+			1: {
 				Beta:  "don't panic",
 				Gamma: 42,
 				Delta: nil,
 			},
-			2: &Bar{
+			2: {
 				Beta:  "sudo make me a sandwich.",
 				Gamma: 11,
 				Delta: &Foo{
@@ -1005,10 +1010,10 @@ func TestIssue9(t *testing.T) {
 
 	// test that map keys are deep copied
 	testC := map[*Foo][]string{
-		&Foo{Alpha: "Henry Dorsett Case"}: []string{
+		{Alpha: "Henry Dorsett Case"}: {
 			"Cutter",
 		},
-		&Foo{Alpha: "Molly Millions"}: []string{
+		{Alpha: "Molly Millions"}: {
 			"Rose Kolodny",
 			"Cat Mother",
 			"Steppin' Razor",
@@ -1051,8 +1056,8 @@ func TestIssue9(t *testing.T) {
 	}
 
 	testD := map[Bizz]string{
-		Bizz{&Foo{"Neuromancer"}}: "Rio",
-		Bizz{&Foo{"Wintermute"}}:  "Berne",
+		{&Foo{"Neuromancer"}}: "Rio",
+		{&Foo{"Wintermute"}}:  "Berne",
 	}
 	copyD := Copy(testD).(map[Bizz]string)
 	if len(copyD) != len(testD) {
@@ -1080,6 +1085,55 @@ func TestIssue9(t *testing.T) {
 		if !found {
 			t.Errorf("expected key %v to exist in the copy; it didn't", k)
 		}
+	}
+}
+
+type NestedProto struct {
+	Outer       *testpb.Outer
+	OuterStruct testpb.Outer
+}
+
+func TestProto(t *testing.T) {
+	testCases := []struct {
+		name string
+	}{
+		{
+			name: "1",
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			o := &NestedProto{
+				Outer: &testpb.Outer{
+					Nested: []*testpb.Nested{
+						{
+							A: "hello",
+							Nested: []*testpb.Nested{
+								{
+									A: "hello again",
+								},
+							},
+						},
+					},
+				},
+				OuterStruct: testpb.Outer{
+					Nested: []*testpb.Nested{
+						{
+							A: "hello",
+							Nested: []*testpb.Nested{
+								{
+									A: "hello again",
+								},
+							},
+						},
+					},
+				},
+			}
+			oCopy := Copy(o).(*NestedProto)
+			if diff := cmp.Diff(o, oCopy, protocmp.Transform()); diff != "" {
+				t.Errorf("Expected copy to be same as original, diff (-want +got)=\n%s", diff)
+			}
+		})
 	}
 }
 
