@@ -9,6 +9,8 @@ package deepcopy
 import (
 	"reflect"
 	"time"
+
+	"google.golang.org/protobuf/proto"
 )
 
 // Interface for delegating copy process to type
@@ -56,6 +58,17 @@ func copyRecursive(original, cpy reflect.Value) {
 	// handle according to original's Kind
 	switch original.Kind() {
 	case reflect.Ptr:
+		// reflection should never be used on the contents of a protobuf, so we use proto.Clone.
+		// Since we don't traverse the inside of a protobuf message there is only one
+		// assumption about the representation of protobufs: that they satisfy the
+		// proto.Message interface.
+		if m, ok := original.Interface().(proto.Message); ok {
+			mClone := proto.Clone(m)
+			copyValue := reflect.ValueOf(mClone)
+			cpy.Set(copyValue)
+			return
+		}
+
 		// Get the actual value being pointed to.
 		originalValue := original.Elem()
 
@@ -85,6 +98,17 @@ func copyRecursive(original, cpy reflect.Value) {
 			cpy.Set(reflect.ValueOf(t))
 			return
 		}
+
+		if original.CanAddr() {
+			ptr := original.Addr().Interface()
+			if m, ok := ptr.(proto.Message); ok {
+				mClone := proto.Clone(m)
+				copyValue := reflect.ValueOf(mClone).Elem()
+				cpy.Set(copyValue)
+				return
+			}
+		}
+
 		// Go through each field of the struct and copy it.
 		for i := 0; i < original.NumField(); i++ {
 			// The Type's StructField for a given field is checked to see if StructField.PkgPath

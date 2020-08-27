@@ -1,0 +1,13 @@
+syntax = "proto3";
+package test;
+
+option go_package = "github.com/chronologos/deepcopy/test";
+
+message Outer {
+    repeated Nested nested = 1;
+}
+
+message Nested {
+    string a = 1;
+    repeated Nested nested = 2;
+}
