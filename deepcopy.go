@@ -44,13 +44,37 @@ func Copy(src interface{}) interface{} {
 
 // copyRecursive does the actual copying of the interface. It currently has
 // limited support for what it can handle. Add as needed.
+func applyDeepCopy(original, cpy reflect.Value) bool {
+	if !original.CanInterface() {
+		return false
+	}
+	copier, ok := original.Interface().(Interface)
+	if !ok {
+		return false
+	}
+	copied := reflect.ValueOf(copier.DeepCopy())
+	if !copied.IsValid() {
+		return true
+	}
+	if copied.Type().AssignableTo(cpy.Type()) {
+		cpy.Set(copied)
+		return true
+	}
+	if copied.Kind() == reflect.Ptr && !copied.IsNil() && copied.Elem().Type().AssignableTo(cpy.Type()) {
+		cpy.Set(copied.Elem())
+		return true
+	}
+	return false
+}
+
 func copyRecursive(original, cpy reflect.Value) {
 	// check for implement deepcopy.Interface
-	if original.CanInterface() {
-		if copier, ok := original.Interface().(Interface); ok {
-			cpy.Set(reflect.ValueOf(copier.DeepCopy()))
-			return
-		}
+	if applyDeepCopy(original, cpy) {
+		return
+	}
+	// Pointer-receiver DeepCopy methods are not in the value's method set.
+	if original.Kind() != reflect.Ptr && original.CanAddr() && applyDeepCopy(original.Addr(), cpy) {
+		return
 	}
 
 	// handle according to original's Kind
