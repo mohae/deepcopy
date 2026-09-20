@@ -1108,3 +1108,26 @@ func TestInterface(t *testing.T) {
 		t.Errorf("expected value %v, but it's %v", "custom copy", copiedNest.I.A)
 	}
 }
+
+type valueCopier struct {
+	v int
+}
+
+func (a *valueCopier) DeepCopy() interface{} {
+	return &valueCopier{v: a.v}
+}
+
+type nestValueCopier struct {
+	A valueCopier
+}
+
+func TestInterfaceValueField(t *testing.T) {
+	src := &nestValueCopier{A: valueCopier{v: 1}}
+	copied := Copy(src).(*nestValueCopier)
+	if copied.A.v != 1 {
+		t.Errorf("expected nested value field DeepCopy to run; got v=%d", copied.A.v)
+	}
+	if &copied.A == &src.A {
+		t.Error("expected nested value field to be a copy")
+	}
+}
