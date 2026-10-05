@@ -111,8 +111,12 @@ func copyRecursive(original, cpy reflect.Value) {
 			return
 		}
 		cpy.Set(reflect.MakeMap(original.Type()))
-		for _, key := range original.MapKeys() {
-			originalValue := original.MapIndex(key)
+		// MapRange (not MapKeys+MapIndex) so keys that are not equal to
+		// themselves — e.g. NaN floats — still yield their real values.
+		iter := original.MapRange()
+		for iter.Next() {
+			key := iter.Key()
+			originalValue := iter.Value()
 			copyValue := reflect.New(originalValue.Type()).Elem()
 			copyRecursive(originalValue, copyValue)
 			copyKey := Copy(key.Interface())
