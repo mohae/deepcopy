@@ -2,6 +2,7 @@ package deepcopy
 
 import (
 	"fmt"
+	"math"
 	"reflect"
 	"testing"
 	"time"
@@ -1106,5 +1107,28 @@ func TestInterface(t *testing.T) {
 	copiedNest := Copy(ni).(*NestI)
 	if copiedNest.I.A != "custom copy" {
 		t.Errorf("expected value %v, but it's %v", "custom copy", copiedNest.I.A)
+	}
+}
+
+func TestCopyMapNaNKeys(t *testing.T) {
+	m := map[float64]string{}
+	m[math.NaN()] = "x"
+	m[math.NaN()] = "y"
+	if len(m) != 2 {
+		t.Fatalf("setup: want 2 NaN entries, got %d", len(m))
+	}
+	out := Copy(m).(map[float64]string)
+	if len(out) != 2 {
+		t.Fatalf("Copy len = %d, want 2; map=%v", len(out), out)
+	}
+	vals := map[string]bool{}
+	for k, v := range out {
+		if !math.IsNaN(k) {
+			t.Errorf("expected NaN key, got %v", k)
+		}
+		vals[v] = true
+	}
+	if !vals["x"] || !vals["y"] {
+		t.Errorf("lost NaN values; got %v", out)
 	}
 }
